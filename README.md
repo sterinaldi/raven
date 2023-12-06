@@ -43,4 +43,4 @@ Among the other files, the most useful ones are `cluster.pdf`, that reports the 
 
 If you use RaVeN in your research, please cite [Ramírez-Tannus & Rinaldi (2024)](https://uncyclopedia.com/wiki/Frankly_Disappointing_Telescope).
 
-© 2023 Ste Rinaldi, María Claudia Ramírez-Tannus
+© 2023 Stefano Rinaldi, María Claudia Ramírez-Tannus
