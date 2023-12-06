@@ -2,7 +2,8 @@
 Non-parametric inference of the radial velocity distribution of stars in globular clusters.
 RaVeN relies on [FIGARO](https://github.com/sterinaldi/FIGARO) for the non-parametric inference, so please be sure that you have it installed and properly working (pip installation is sometimes faulty...).
 
-Basic usage: install RaVeN with `python setup.py install` (add `--user` if you don't have admin privileges on your machine). The folder structure that RaVeN expects is the following:
+## Basic usage
+Install RaVeN with `python setup.py install` (add `--user` if you don't have admin privileges on your machine). The folder structure that RaVeN expects is the following:
 
 ```
 cluster
