@@ -15,7 +15,7 @@ cluster
 
 The naming convention does not matter as long as the folder structure is respected. Each .txt file must contain two columns with radial velocity measurement and error for each available epoch.
 
-To analyse a cluster with RaVeN, simply run the command line instruction `raven -i path/to/cluster/stars`. If you want to specify some bounds for the output plot, add the option `-b "[vmin, vmax]"` (remember the quotation marks). A different number of draws can be set with `-n` and the non-parametric inference, once performed once, can be skipped with `-p`. The available options can be displayed with `raven -h`. After the run, the folder will look like this:
+To analyse a cluster with RaVeN, simply run the command line instruction `raven -i path/to/cluster/stars`. If you want to specify some bounds for the output plot, add the option `-b "[vmin, vmax]"` (remember the quotation marks). A different number of draws can be set with `-n` and the non-parametric inference, once performed at least one time, can be skipped with `-p`. The available options can be displayed with `raven -h`. After the run, the folder will look like this:
 
 ```
 cluster
