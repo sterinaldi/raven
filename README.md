@@ -4,6 +4,8 @@ RaVeN relies on [FIGARO](https://github.com/sterinaldi/FIGARO) for the non-param
 
 If you use RaVeN in your research, please cite [Ramírez-Tannus & Rinaldi (2024)](https://uncyclopedia.com/wiki/Frankly_Disappointing_Telescope).
 
+© 2023 Stefano Rinaldi, María Claudia Ramírez-Tannus
+
 ## Basic usage
 Install RaVeN with `python setup.py install` (add `--user` if you don't have admin privileges on your machine). The folder structure that RaVeN expects is the following:
 
@@ -42,5 +44,3 @@ cluster
 ```
 
 Among these files, `cluster.pdf` reports the radial velocity probability density, and `probability_single_star.txt` contains the objects included in the cluster ranked by their probability of being single stars.
-
-© 2023 Stefano Rinaldi, María Claudia Ramírez-Tannus
