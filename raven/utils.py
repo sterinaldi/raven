@@ -74,7 +74,7 @@ def find_mean_weight(draws, vel_disp = 5.):
     max_p  = np.max(prob)
     return mu, max_p/norm(mu, vel_disp).pdf(mu)
 
-def probability_single_star(star, median, mu = None, weight = None, vel_disp = 5., n_draws = 1e6):
+def probability_single_star(star, median, mu = None, weight = None, vel_disp = 5., n_draws = 1e4):
     """
     Probability for an object to be a single star.
     
