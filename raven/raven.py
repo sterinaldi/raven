@@ -26,6 +26,7 @@ def main():
     parser.add_option("-s", "--sigma_prior", dest = "sigma_prior", type = "float", help = "Expected standard deviation (prior) for hierarchical inference.", default = 3.)
     parser.add_option("-r", "--rel_error", dest = "rel_error", type = "float", help = "Relative error for measurements without uncertainties. Default 3%", default = 0.03)
     parser.add_option("-v", "--vel_disp", dest = "vel_disp", type = "float", help = "Velocity dispersion for single stars. Default 5 km/s", default = 5.)
+    parser.add_option("--n_pts", dest = "n_pts", type = "float", help = "Number of points for probability calculation", default = 10000)
     
     (options, args) = parser.parse_args()
 
@@ -62,11 +63,11 @@ def main():
     mu, weight  = find_mean_weight(draws, options.vel_disp)
     # Plot
     single_pdf = lambda x: weight*norm(mu, options.vel_disp).pdf(x)
-    plot_median_cr(draws, injected = single_pdf, out_folder = options.output, name = options.h_name, label = options.symbol, unit = options.unit, hierarchical = True, injected_label = '\\sigma = {0}'.format(options.vel_disp)+'\ \\mathrm{km/s}')
+    plot_median_cr(draws, injected = single_pdf, bounds = options.plot_bounds[0], out_folder = options.output, name = options.h_name, label = options.symbol, unit = options.unit, hierarchical = True, injected_label = '\\sigma = {0}'.format(options.vel_disp)+'\ \\mathrm{km/s}', n_pts = int(options.n_pts))
     # Compute probability for each object
     prob_hdpgmm = np.genfromtxt(Path(options.output, 'prob_'+options.h_name+'.txt'), names = True)
     median      = median_reconstruction(prob_hdpgmm['x'], prob_hdpgmm['50'])
-    prob_single = np.array([probability_single_star(star[0], median, mu = mu, weight = weight, vel_disp = options.vel_disp) for star in tqdm(mixtures, desc = 'p(single)')])
+    prob_single = np.array([probability_single_star(star[0], median, mu = mu, weight = weight, bounds = options.plot_bounds, vel_disp = options.vel_disp, n_pts = int(options.n_pts)) for star in tqdm(mixtures, desc = 'p(single)')])
     # Save probabilities
     idx = np.argsort(prob_single)[::-1]
     with open(Path(options.output, 'probability_single_star.txt'), 'w') as f:
