@@ -13,7 +13,7 @@ cluster
     └─ star_3.txt
 ```
 
-The naming convention does not matter as long as the folder structure is respected. Each .txt file must contain two columns with radial velocity measurement and error for each available epoch.
+The naming convention does not matter as long as the folder structure is respected. Each .txt file must contain two columns with radial velocity measurement and error for each available epoch (0 if no error is available).
 
 To analyse a cluster with RaVeN, simply run the command line instruction `raven -i path/to/cluster/stars`. If you want to specify some bounds for the output plot, add the option `-b "[vmin, vmax]"` (remember the quotation marks). A different number of draws can be set with `-n` and the non-parametric inference, once performed at least one time, can be skipped with `-p`. The available options can be displayed with `raven -h`. After the run, the folder will look like this:
 
@@ -39,7 +39,7 @@ cluster
 └── probability_single_star.txt
 ```
 
-Among the other files, the most useful ones are `cluster.pdf`, that reports the radial velocity probability density, and `probability_single_star.txt`, which contains the objects included in the cluster sorted by their probability of being single stars.
+Among these files, `cluster.pdf` reports the radial velocity probability density, and `probability_single_star.txt` contains the objects included in the cluster ranked by their probability of being single stars.
 
 If you use RaVeN in your research, please cite [Ramírez-Tannus & Rinaldi (2024)](https://uncyclopedia.com/wiki/Frankly_Disappointing_Telescope).
 
