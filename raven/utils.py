@@ -1,6 +1,7 @@
 import numpy as np
 from pathlib import Path
 from scipy.stats import norm
+from scipy.interpolate import interp1d
 from figaro.utils import make_gaussian_mixture
 
 class median_reconstruction:
