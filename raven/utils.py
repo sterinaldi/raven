@@ -1,11 +1,7 @@
 import numpy as np
 from pathlib import Path
-from numba import njit
-from tqdm import tqdm
 from scipy.stats import norm
-from scipy.interpolate import interp1d
 from figaro.utils import make_gaussian_mixture
-from figaro.montecarlo import MC_integral
 
 class median_reconstruction:
     """
@@ -61,7 +57,7 @@ def find_mean_weight(draws, vel_disp = 5.):
     Find the mean (maximum of the median) and relative weight of the 5 km/s std Gaussian distribution of single stars
     
     Arguments:
-        list draws: list of figaro.mixture instances
+        list draws:      list of figaro.mixture instances
         double vel_disp: velocity dispersion for single stars
     
     Returns:
@@ -81,20 +77,23 @@ def probability_single_star(star, median, mu, weight, bounds, vel_disp = 5., n_p
     Probability for an object to be a single star.
     
     Arguments:
-        mixture star: mixture representing the (potentially multi-epoch) observations
-        callable median: (H)DPGMM median reconstructions of the radial velocity distribution
-        double mu: mean of the single star distribution. If None, is inferred from draws directly.
-        double weight: relative weight of the single star component in the overall radial velocity distribution. If None, is inferred from draws directly.
-        double vel_disp: velocity dispersion for single stars
+        mixture star:      mixture representing the (potentially multi-epoch) observations
+        callable median:   (H)DPGMM median reconstructions of the radial velocity distribution
+        double mu:         mean of the single star distribution. If None, is inferred from draws directly.
+        double weight:     relative weight of the single star component in the overall radial velocity distribution. If None, is inferred from draws directly.
+        np.ndarray bounds: bounds for integration
+        double vel_disp:   velocity dispersion for single stars
+        int n_pts:         number of points for the integral calculation
     
     Returns:
         double: probability for the object to be a single star
     """
     # Integrals
+    bounds      = np.atleast_2d(bounds)
     single_dist = norm(mu, vel_disp)
     x           = np.linspace(bounds[0,0], bounds[0,1], int(n_pts))
     dx          = x[1]-x[0]
     non_par     = np.sum(median.pdf(x)*star.pdf(x)*dx)
     p_single    = np.sum(single_dist.pdf(x)*star.pdf(x)*dx)
     p_binary    = (non_par - weight*p_single)/(1. - weight)
-    return np.min([p_single/(p_single + p_binary), 1.])
+    return p_single, np.max([p_binary, 0]) # accounts for potential numerical error when p_single ~ p_nonpar (w ~ 1)
