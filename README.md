@@ -40,7 +40,8 @@ cluster
 ├── cluster.pdf
 ├── log_cluster.pdf
 ├── prob_cluster.txt
-└── probability_single_star.txt
+├── single_fraction_cluster.pdf
+└── p_single_cluster.txt
 ```
 
-Among these files, `cluster.pdf` reports the radial velocity probability density, and `probability_single_star.txt` contains the objects included in the cluster ranked by their probability of being single stars.
+Among these files, `cluster.pdf` reports the radial velocity probability density, `single_fraction_cluster.pdf` contains the posterior probability density for the fraction of single stars and `probability_single_star.txt` contains the objects included in the cluster ranked by their probability of being single stars. In this file, pdf denotes the probability of being a single star solely 
