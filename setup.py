@@ -11,7 +11,7 @@ with open("README.md") as readme_file:
 
 setup(
     name = 'raven',
-    description = 'RaVeN: Radial Velocities, Nonparametrics',
+    description = 'RaVeN: Radial Velocities, Nonparametric',
     author = 'Ste Rinaldi, María Claudia Ramírez-Tannus',
     author_email = 'stefano.rinaldi@uni-heidelberg.de, ramirez@mpia.de',
     url = 'https://github.com/sterinaldi/raven',
