@@ -9,7 +9,7 @@ class Gibbs:
     Arguments:
         np.ndarray p_single: probability for each star to be drawn from the single distribution
         np.ndarray p_binary: probability for each star to be drawn from the binary distribution
-        double alpha: symmetric Dirichlet distribution concentration parameter
+        double alpha:        symmetric Dirichlet distribution concentration parameter
     """
     def __init__(self, p_single,
                        p_binary,
@@ -51,9 +51,9 @@ class Gibbs:
         Arguments:
             int idx_star: star to be updated
         """
-        p_s    = self.p_single[idx_star]*(self.n_single + self.alpha/2.)/(self.n_single + self.n_binary + self.alpha)
-        p_b    = self.p_binary[idx_star]*(self.n_binary + self.alpha/2.)/(self.n_single + self.n_binary + self.alpha)
-        N      = p_s + p_b
+        p_s = self.p_single[idx_star]*(self.n_single + self.alpha/2.)/(self.n_single + self.n_binary + self.alpha)
+        p_b = self.p_binary[idx_star]*(self.n_binary + self.alpha/2.)/(self.n_single + self.n_binary + self.alpha)
+        N   = p_s + p_b
         return np.random.choice([False, True], p = [p_b/N, p_s/N])
     
     def draw_sample(self):
