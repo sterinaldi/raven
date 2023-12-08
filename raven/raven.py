@@ -1,5 +1,6 @@
 import numpy as np
 import optparse as op
+import matplotlib.pyplot as plt
 
 from pathlib import Path
 from tqdm import tqdm
@@ -9,8 +10,10 @@ from figaro.mixture import HDPGMM
 from figaro.utils import get_priors
 from figaro.plot import plot_median_cr
 from figaro.load import save_density, load_density, load_data
+from figaro import plot_settings
 
 from raven.utils import make_mixtures, find_mean_weight, probability_single_star, median_reconstruction
+from raven.gibbs import Gibbs
 
 def main():
 
@@ -27,6 +30,7 @@ def main():
     parser.add_option("-r", "--rel_error", dest = "rel_error", type = "float", help = "Relative error for measurements without uncertainties. Default 3%", default = 0.03)
     parser.add_option("-v", "--vel_disp", dest = "vel_disp", type = "float", help = "Velocity dispersion for single stars. Default 5 km/s", default = 5.)
     parser.add_option("--n_pts", dest = "n_pts", type = "float", help = "Number of points for probability calculation", default = 10000)
+    parser.add_option("--n_samples", dest = "n_samples", type = "float", help = "Number of samples for single fraction calculation", default = 10000)
     
     (options, args) = parser.parse_args()
 
@@ -67,11 +71,26 @@ def main():
     # Compute probability for each object
     prob_hdpgmm = np.genfromtxt(Path(options.output, 'prob_'+options.h_name+'.txt'), names = True)
     median      = median_reconstruction(prob_hdpgmm['x'], prob_hdpgmm['50'])
-    prob_single = np.array([probability_single_star(star[0], median, mu = mu, weight = weight, bounds = options.plot_bounds, vel_disp = options.vel_disp, n_pts = int(options.n_pts)) for star in tqdm(mixtures, desc = 'p(single)')])
+    probability = np.array([probability_single_star(star[0], median, mu = mu, weight = weight, bounds = options.plot_bounds, vel_disp = options.vel_disp, n_pts = int(options.n_pts)) for star in tqdm(mixtures, desc = 'p(single)')])
+    # Gibbs sampling
+    sampler = Gibbs(probability[:,0], probability[:,1])
+    single_fraction, prob_single = sampler.run(int(options.n_samples))
+    l_f, m_f, u_f = np.percentile(single_fraction, [16,50,84])
     # Save probabilities
     idx = np.argsort(prob_single)[::-1]
-    with open(Path(options.output, 'probability_single_star.txt'), 'w') as f:
+    with open(Path(options.output, 'p_single_{}.txt'.format(options.h_name)), 'w') as f:
+        f.write('# star p_single\n')
         [f.write('{0}\t{1}\n'.format(name, p)) for name, p in zip(np.array(names)[idx], prob_single[idx])]
+    # Plot single star fractions samples
+    label = '$w_\\mathrm{single} ='+'{0:.2f}'.format(m_f)+'^{+'+'{0:.2f}'.format(u_f-m_f)+'}_{-'+'{0:.2f}'.format(m_f-l_f)+'}$'
+    fig, ax = plt.subplots()
+    ax.hist(single_fraction, histtype = 'step', density = True, label = label)
+    ax.set_xlabel('$w_\\mathrm{single}$')
+    ax.set_ylabel('$p(w_\\mathrm{single})$')
+    leg = ax.legend(handlelength=0, handletextpad=0)
+    for item in leg.legendHandles:
+        item.set_visible(False)
+    fig.savefig(Path(options.output, 'single_fraction_{}.pdf'.format(options.h_name)), bbox_inches = 'tight')
 
 if __name__ == '__main__':
     main()
