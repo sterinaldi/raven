@@ -67,7 +67,7 @@ def main():
     mu, weight  = find_mean_weight(draws, options.vel_disp)
     # Plot
     single_pdf = lambda x: weight*norm(mu, options.vel_disp).pdf(x)
-    plot_median_cr(draws, injected = single_pdf, bounds = options.plot_bounds[0], out_folder = options.output, name = options.h_name, label = options.symbol, unit = options.unit, hierarchical = True, injected_label = '\\sigma = {0}'.format(options.vel_disp)+'\ \\mathrm{km/s}', n_pts = int(options.n_pts))
+    plot_median_cr(draws, injected = single_pdf, bounds = options.plot_bounds[0], out_folder = options.output, name = options.h_name, label = options.symbol, unit = options.unit, hierarchical = True, injected_label = '\\sigma = {0:.1f}'.format(options.vel_disp)+'\ \\mathrm{km/s}', n_pts = int(options.n_pts))
     Path(options.output, 'log_{}.pdf'.format(options.h_name)).unlink()
     # Compute probability for each object
     prob_hdpgmm = np.genfromtxt(Path(options.output, 'prob_'+options.h_name+'.txt'), names = True)
