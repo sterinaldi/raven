@@ -13,7 +13,7 @@ class Gibbs:
     """
     def __init__(self, p_single,
                        p_binary,
-                       alpha = 1.
+                       alpha = 2.
                        ):
         self.p_single        = p_single
         self.p_binary        = p_binary
