@@ -44,4 +44,4 @@ cluster
 └── p_single_cluster.txt
 ```
 
-Among these files, `cluster.pdf` reports the radial velocity probability density, `single_fraction_cluster.pdf` contains the posterior probability density for the fraction of single stars and `p_single_cluster.txt` contains the objects included in the cluster ranked by their probability of being single stars. If some of the measurements do not have an associated uncertainty, `no_errors.txt` will be created stating the relative uncertainty that has been associated with the measurements.
+Among these files, `cluster.pdf` reports the radial velocity probability density, `single_fraction_cluster.pdf` contains the posterior probability density for the fraction of single stars (the posterior samples can be found in `samples_fraction_cluster.txt`) and `p_single_cluster.txt` contains the objects included in the cluster ranked by their probability of being single stars. If some of the measurements do not have an associated uncertainty, `no_errors.txt` will be created stating the relative uncertainty that has been associated with the measurements.
