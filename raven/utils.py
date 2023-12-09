@@ -32,6 +32,8 @@ def make_mixtures(folder, rel_error = 0.03):
     means = []
     covs  = []
     names = []
+    err   = []
+    flag_glob_err = False
     for star in Path(folder).glob('*.[tc][xs][tv]'):
         star_name = star.parts[-1].split('.')[0]
         data = np.atleast_2d(np.genfromtxt(star))
@@ -42,12 +44,14 @@ def make_mixtures(folder, rel_error = 0.03):
             idx = np.where(data[:,1] == 0)[0]
             data[:,1][idx] = np.abs(data[:,0][idx]*rel_error)
         if flag_no_errors == True:
-            with open(Path(parent_folder, 'no_errors.txt'), 'a') as f:
-                f.write('{0}: star with no uncertainty. {1:.0f}% by hand.\n'.format(star_name, rel_error*100.))
+            flag_glob_err = True
+            err.append('{0}: star with no uncertainty. {1:.0f}% by hand.'.format(star_name, rel_error*100.))
         # Store means and covariances
         means.append(data[:,0])
         covs.append(np.atleast_2d(data[:,1])**2)
         names.append(star_name)
+    with open(Path(parent_folder, 'no_errors.txt'), 'w') as f:
+        f.write('\n'.join(err))
     # Build mixtures
     bounds   = np.array([np.min([m.min() for m in means])-3*np.sqrt(np.max([c.max() for c in covs])), np.max([m.max() for m in means])+3*np.sqrt(np.max([c.max() for c in covs]))])
     mixtures = make_gaussian_mixture(means, covs, bounds = bounds, names = names, out_folder = parent_folder, save = True, save_samples = True, probit = False)
