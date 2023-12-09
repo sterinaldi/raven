@@ -41,6 +41,7 @@ cluster
 ├── prob_cluster.txt
 ├── no_errors.txt
 ├── single_fraction_cluster.pdf
+├── samples_fraction_cluster.txt
 └── p_single_cluster.txt
 ```
 
