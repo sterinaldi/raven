@@ -76,6 +76,7 @@ def main():
     # Gibbs sampling
     sampler = Gibbs(probability[:,0], probability[:,1])
     single_fraction, prob_single = sampler.run(int(options.n_samples))
+    np.savetxt(Path(options.output, 'samples_fraction_{}.txt'.format(options.h_name)), single_fraction)
     l_f, m_f, u_f = np.percentile(single_fraction, [16,50,84])
     # Save probabilities
     idx = np.argsort(prob_single)[::-1]
