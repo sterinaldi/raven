@@ -8,12 +8,12 @@ from scipy.stats import norm
 
 from figaro.mixture import HDPGMM
 from figaro.utils import get_priors
-from figaro.plot import plot_median_cr
 from figaro.load import save_density, load_density, load_data
 from figaro import plot_settings
 
 from raven.utils import make_mixtures, find_mean_weight, probability_single_star, median_reconstruction
 from raven.gibbs import Gibbs
+from raven.plot import plot_single_fraction, plot_median_cr, plot_p_single
 
 def main():
 
@@ -31,6 +31,7 @@ def main():
     parser.add_option("-v", "--vel_disp", dest = "vel_disp", type = "float", help = "Velocity dispersion for single stars. Default 5 km/s", default = 5.)
     parser.add_option("--n_pts", dest = "n_pts", type = "float", help = "Number of points for probability calculation", default = 10000)
     parser.add_option("--n_samples", dest = "n_samples", type = "float", help = "Number of samples for single fraction calculation", default = 10000)
+    parser.add_option("--p_th", dest = "p_threshold", type = "float", help = "Threshold probability for labelling a star as single", default = 0.5)
     
     (options, args) = parser.parse_args()
 
@@ -66,9 +67,7 @@ def main():
         draws = load_density(Path(output_draws, 'draws_'+options.h_name+'.pkl'))
     mu, weight  = find_mean_weight(draws, options.vel_disp)
     # Plot
-    single_pdf = lambda x: weight*norm(mu, options.vel_disp).pdf(x)
-    plot_median_cr(draws, injected = single_pdf, bounds = options.plot_bounds[0], out_folder = options.output, name = options.h_name, label = options.symbol, unit = options.unit, hierarchical = True, injected_label = '\\sigma = {0:.1f}'.format(options.vel_disp)+'\ \\mathrm{km/s}', n_pts = int(options.n_pts))
-    Path(options.output, 'log_{}.pdf'.format(options.h_name)).unlink()
+    plot_median_cr(draws, mu = mu, vel_disp = options.vel_disp, weight = weight, bounds = options.plot_bounds[0], out_folder = options.output, name = options.h_name, label = options.symbol, unit = options.unit, n_pts = int(options.n_pts))
     # Compute probability for each object
     prob_hdpgmm = np.genfromtxt(Path(options.output, 'prob_'+options.h_name+'.txt'), names = True)
     median      = median_reconstruction(prob_hdpgmm['x'], prob_hdpgmm['50'])
@@ -77,22 +76,14 @@ def main():
     sampler = Gibbs(probability[:,0], probability[:,1])
     single_fraction, prob_single = sampler.run(int(options.n_samples))
     np.savetxt(Path(options.output, 'samples_fraction_{}.txt'.format(options.h_name)), single_fraction)
-    l_f, m_f, u_f = np.percentile(single_fraction, [16,50,84])
     # Save probabilities
-    idx = np.argsort(prob_single)[::-1]
+    idx = np.argsort(prob_single)
     with open(Path(options.output, 'p_single_{}.txt'.format(options.h_name)), 'w') as f:
         f.write('# star p_single\n')
-        [f.write('{0}\t{1}\n'.format(name, p)) for name, p in zip(np.array(names)[idx], prob_single[idx])]
+        [f.write('{0}\t{1}\n'.format(name, p)) for name, p in zip(np.array(names)[idx[::-1]], prob_single[idx[::-1]])]
     # Plot single star fractions samples
-    label = '$w_\\mathrm{single} ='+'{0:.2f}'.format(m_f)+'^{+'+'{0:.2f}'.format(u_f-m_f)+'}_{-'+'{0:.2f}'.format(m_f-l_f)+'}$'
-    fig, ax = plt.subplots()
-    ax.hist(single_fraction, histtype = 'step', density = True, label = label)
-    ax.set_xlabel('$w_\\mathrm{single}$')
-    ax.set_ylabel('$p(w_\\mathrm{single})$')
-    leg = ax.legend(handlelength=0, handletextpad=0)
-    for item in leg.legendHandles:
-        item.set_visible(False)
-    fig.savefig(Path(options.output, 'single_fraction_{}.pdf'.format(options.h_name)), bbox_inches = 'tight')
+    plot_single_fraction(single_fraction, out_folder = options.output, name = options.h_name)
+    plot_p_single(probs = prob_single[idx], stars = np.array(names)[idx], threshold = options.p_threshold, out_folder = options.output, name = options.h_name)
 
 if __name__ == '__main__':
     main()
