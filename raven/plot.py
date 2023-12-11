@@ -54,6 +54,6 @@ def plot_p_single(probs, stars, threshold, out_folder = '.', name = 'cluster', s
     single_star = Line2D([0],[0], label = '$\\mathrm{Single\ star}$', color = 'limegreen', marker = '*', ls = '')
     binary      = Line2D([0],[0], label = '$\\mathrm{Binary}$', color = 'firebrick', marker = 'x', ls = '')
     handles.extend([single_star, binary])
-    ax.legend(loc = 'upper left', handles = handles)
+    ax.legend(loc = 0, handles = handles)
     fig.savefig(Path(out_folder, 'p_single_{}.pdf'.format(name)), bbox_inches = 'tight')
     plt.close(fig)
