@@ -27,11 +27,7 @@ def plot_single_fraction(samples, out_folder = '.', name = 'cluster'):
 def plot_p_single(probs, stars, threshold, out_folder = '.', name = 'cluster', single = None):
     step = 0.3
     fig, ax = plt.subplots(figsize = (6.4, len(probs)*0.3))
-    ax.axvline(threshold, ls = '--', lw = 0.7, c = 'grey', dashes = (5,5))
-    if threshold > 0.5:
-        ax.text(x = threshold+0.01, y = -step*0.5, s = '$p_\\mathrm{th} = '+'{}$'.format(threshold), ha = 'left', va = 'bottom', rotation = 'vertical', color = 'grey')
-    else:
-        ax.text(x = threshold-0.01, y = (len(probs)-0.5)*step, s = '$p_\\mathrm{th} = '+'{}$'.format(threshold), ha = 'right', va = 'top', rotation = 'vertical', color = 'grey')
+    ax.axvline(threshold, ls = '--', lw = 0.7, c = 'grey', dashes = (5,5), label = '$p_\\mathrm{th} = '+'{}$'.format(threshold)')
     if single is None:
         single = (probs > threshold)
     for i, (p, s, single_flag) in enumerate(zip(probs,stars, single)):
