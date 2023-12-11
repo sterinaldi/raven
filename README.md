@@ -46,4 +46,12 @@ cluster
 └── p_single_cluster.txt
 ```
 
-Among these files, `cluster.pdf` reports the radial velocity probability density, `single_fraction_cluster.pdf` contains the posterior probability density for the fraction of single stars (the posterior samples can be found in `samples_fraction_cluster.txt`) and `p_single_cluster.txt` contains the objects included in the cluster ranked by their probability of being single stars. These probabilities are also displayed in `p_single_cluster.pdf`. If some of the measurements do not have an associated uncertainty, `no_errors.txt` will be created stating the relative uncertainty that has been associated with the measurements.
+### Output files overview
+Content of the output files produced by RaVeN:
+
+* `cluster.pdf`: radial velocity probability density;
+* `single_fraction_cluster.pdf`: posterior probability density for the fraction of single stars;
+* `samples_fraction_cluster.txt`: posterior samples for the fraction of single stars;
+* `p_single_cluster.txt`: objects included in the cluster ranked by their probability of being single stars;
+* `p_single_cluster.pdf`: fancy plot displaying the probability of each object of being a single star;
+* `no_errors.txt`: if some of the measurements do not have an associated uncertainty, this file contains the relative uncertainty that has been associated with the measurements.
