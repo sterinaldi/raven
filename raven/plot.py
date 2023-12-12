@@ -47,6 +47,7 @@ def plot_p_single(probs, stars, threshold, out_folder = '.', name = 'cluster', s
         ax.text(x = p + offset, y = i*step, s = '$\\mathrm{'+'{}'.format(s)+'}$', ha = alignment, va = 'center')
     # Set right limit to 1
     ax.scatter([1], [0], marker = '', c = 'none')
+    ax.scatter([0], [0], marker = '', c = 'none')
     ax.set_ylim(-step, (len(probs))*step)
     ax.set_xlabel('$p_\\mathrm{single}$')
     ax.tick_params(axis='y', which='both', left=False, labelleft=False)
