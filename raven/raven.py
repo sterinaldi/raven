@@ -11,7 +11,7 @@ from figaro.utils import get_priors
 from figaro.load import save_density, load_density, load_data
 from figaro import plot_settings
 
-from raven.utils import make_mixtures, find_mean_weight, probability_single_star, median_reconstruction
+from raven.utils import make_mixtures, find_mean_weight, probability_single_star, median_reconstruction, variability_test_single
 from raven.gibbs import Gibbs
 from raven.plot import plot_single_fraction, plot_median_cr, plot_p_single
 
@@ -32,6 +32,7 @@ def main():
     parser.add_option("--n_pts", dest = "n_pts", type = "float", help = "Number of points for probability calculation", default = 10000)
     parser.add_option("--n_samples", dest = "n_samples", type = "float", help = "Number of samples for single fraction calculation", default = 10000)
     parser.add_option("--p_th", dest = "p_threshold", type = "float", help = "Threshold probability for labelling a star as single", default = 0.5)
+    parser.add_option("--sana_variability", dest = "sana_variability", action = 'store_true', help = "Use variability test from Sana et al (2012)", default = False)
     
     (options, args) = parser.parse_args()
 
@@ -48,7 +49,11 @@ def main():
     if options.h_name is None:
         options.h_name = options.stars_folder.parent.parts[-1]
     # Prepare mixtures and load samples
-    mixtures, bounds, names = make_mixtures(options.stars_folder, options.rel_error)
+    mixtures, bounds, names, provided_errors = make_mixtures(options.stars_folder, options.rel_error, error = True)
+    if options.sana_variability and provided_errors:
+        options.single = {name: variability_test_single(mix[0].means, mix[0].covs) for mix, name in zip(mixtures, names)}
+    else:
+        options.single = None
     events, _ = load_data(Path(options.output, 'events'))
     # Plot bounds
     if options.plot_bounds is not None:
@@ -83,7 +88,7 @@ def main():
         [f.write('{0}\t{1}\n'.format(name, p)) for name, p in zip(np.array(names)[idx[::-1]], prob_single[idx[::-1]])]
     # Plot single star fractions samples
     plot_single_fraction(single_fraction, out_folder = options.output, name = options.h_name)
-    plot_p_single(probs = prob_single[idx], stars = np.array(names)[idx], threshold = options.p_threshold, out_folder = options.output, name = options.h_name)
+    plot_p_single(probs = prob_single[idx], stars = np.array(names)[idx], threshold = options.p_threshold, out_folder = options.output, name = options.h_name, single = options.single)
 
 if __name__ == '__main__':
     main()

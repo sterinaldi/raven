@@ -1,5 +1,6 @@
 import numpy as np
 from pathlib import Path
+from itertools import combinations
 from scipy.stats import norm
 from scipy.interpolate import interp1d
 from figaro.utils import make_gaussian_mixture
@@ -14,7 +15,7 @@ class median_reconstruction:
     def pdf(self, x):
         return self.interpolant(x)
 
-def make_mixtures(folder, rel_error = 0.03):
+def make_mixtures(folder, rel_error = 0.03, error = False):
     """
     Create gaussian mixture for stars observed in globular clusters.
     If no associated uncertainty is available, a relative error is used.
@@ -22,11 +23,13 @@ def make_mixtures(folder, rel_error = 0.03):
     Arguments:
         str or Path Folder: path to stars
         double rel_error:   relative uncertainty, default 3%
+        bool error:         whether to return a no-errors flag or not
     
     Returns:
         list:       mixtures
         np.ndarray: bounds
         list:       names
+        bool:       error flag (optional)
     """
     parent_folder = Path(folder).parent
     means = []
@@ -55,8 +58,11 @@ def make_mixtures(folder, rel_error = 0.03):
     # Build mixtures
     bounds   = np.array([np.min([m.min() for m in means])-3*np.sqrt(np.max([c.max() for c in covs])), np.max([m.max() for m in means])+3*np.sqrt(np.max([c.max() for c in covs]))])
     mixtures = make_gaussian_mixture(means, covs, bounds = bounds, names = names, out_folder = parent_folder, save = True, save_samples = True, probit = False)
-    return mixtures, bounds, names
-
+    if not error:
+        return mixtures, bounds, names
+    else:
+        return mixtures, bounds, names, not(flag_glob_err)
+    
 def find_mean_weight(draws, vel_disp = 5.):
     """
     Find the mean (maximum of the median) and relative weight of the 5 km/s std Gaussian distribution of single stars
@@ -102,3 +108,19 @@ def probability_single_star(star, median, mu, weight, bounds, vel_disp = 5., n_p
     p_single    = np.sum(single_dist.pdf(x)*star.pdf(x)*dx)
     p_binary    = (non_par - weight*p_single)/(1. - weight)
     return p_single, np.max([p_binary, 0]) # accounts for potential numerical error when p_single ~ p_nonpar (w ~ 1)
+
+def variability_test_single(means, covs, threshold = 4):
+    """
+    Variability test introduced in Eq. 1 of Sana et al. (2012) (https://arxiv.org/pdf/1209.4638.pdf)
+    """
+    sigmas   = np.array([np.abs(mc[0] - mc[1])/np.sqrt(sc[0] + sc[1]) for mc, sc in zip(combinations(means, 2), combinations(covs, 2))])
+    if len(sigmas) == 0:
+        return None
+    else:
+        s_detect = np.max(sigmas)
+    if s_detect > threshold:
+        # Binary star
+        return False
+    else:
+        # Single star
+        return True
