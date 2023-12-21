@@ -29,21 +29,34 @@ def plot_p_single(probs, stars, threshold, out_folder = '.', name = 'cluster', s
     fig, ax = plt.subplots(figsize = (6.4, len(probs)*0.3))
     ax.axvline(threshold, ls = '--', lw = 0.7, c = 'grey', dashes = (5,5), label = '$p_\\mathrm{th} = '+'{}$'.format(threshold))
     if single is None:
-        single = (probs > threshold)
-    for i, (p, s, single_flag) in enumerate(zip(probs,stars, single)):
-        if single_flag:
-            marker = '*'
-            color  = 'limegreen'
+        single = {s: p for s, p in zip(stars, (probs > threshold))}
+    NA_flag = False
+    for i, (p, s) in enumerate(zip(probs, stars)):
+        single_flag = single[s]
+        if single_flag is not None:
+            if single_flag:
+                marker    = '*'
+                color     = 'limegreen'
+                facecolor = color
+                edgecolor = color
+            else:
+                marker    = 'x'
+                color     = 'firebrick'
+                facecolor = color
+                edgecolor = None
         else:
-            marker = 'x'
-            color  = 'firebrick'
+            NA_flag   = True
+            marker    = 'o'
+            color     = 'steelblue'
+            facecolor = 'none'
+            edgecolor = color
         if p > 0.5:
             alignment = 'right'
             offset    = -0.02
         else:
             alignment = 'left'
             offset    = 0.02
-        ax.scatter([p], [i*step], marker = marker, c = color)
+        ax.scatter([p], [i*step], marker = marker, edgecolors = edgecolor, facecolors = facecolor)
         ax.text(x = p + offset, y = i*step, s = '$\\mathrm{'+'{}'.format(s)+'}$', ha = alignment, va = 'center')
     # Set right limit to 1
     ax.scatter([1], [0], marker = '', c = 'none')
@@ -55,6 +68,9 @@ def plot_p_single(probs, stars, threshold, out_folder = '.', name = 'cluster', s
     single_star = Line2D([0],[0], label = '$\\mathrm{Single\ star}$', color = 'limegreen', marker = '*', ls = '')
     binary      = Line2D([0],[0], label = '$\\mathrm{Binary}$', color = 'firebrick', marker = 'x', ls = '')
     handles.extend([single_star, binary])
+    if NA_flag:
+        NA_handle = Line2D([0],[0], label = '$\\mathrm{N/A\ (single\ epoch)}$', color = 'steelblue', marker = 'o', ls = '', markerfacecolor = 'none')
+        handles.extend([NA_handle])
     ax.legend(loc = 0, handles = handles)
     fig.savefig(Path(out_folder, 'p_single_{}.pdf'.format(name)), bbox_inches = 'tight')
     plt.close(fig)
