@@ -8,7 +8,7 @@ from figaro import plot_settings
 
 def plot_median_cr(draws, mu, weight, vel_disp, *args, **kwargs):
     single_pdf = lambda x: weight*norm(mu, vel_disp).pdf(x)
-    figaro_plot_median_cr(draws, injected = single_pdf, injected_label = '\\sigma = {0:.1f}'.format(vel_disp)+'\ \\mathrm{km/s}', hierarchical = True, *args, **kwargs)
+    figaro_plot_median_cr(draws, injected = single_pdf, injected_label = '\\sigma_\\mathrm{V} = {0:.1f}'.format(vel_disp)+'\ \\mathrm{km/s}', hierarchical = True, *args, **kwargs)
     Path(kwargs.get('out_folder'), 'log_{}.pdf'.format(kwargs.get('name'))).unlink()
 
 def plot_single_fraction(samples, out_folder = '.', name = 'cluster'):
