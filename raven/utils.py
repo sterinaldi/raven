@@ -4,26 +4,31 @@ from itertools import combinations
 from scipy.stats import norm
 from scipy.interpolate import interp1d
 from figaro.utils import make_gaussian_mixture
+from figaro.montecarlo import MC_integral
 
-class median_reconstruction:
+class gaussian_product:
     """
-    Wrapper to add the .pdf method to SciPy's interp1d
+    Wrapper to add the .pdf method to a product of gaussians
     """
-    def __init__(self, x, p_x):
-        self.interpolant = interp1d(x, p_x, bounds_error = False, fill_value = 'extrapolate', kind = 'cubic')
+    def __init__(self, gaussians):
+        self.gaussians = gaussians
     
     def pdf(self, x):
-        return self.interpolant(x)
+        return np.exp(self.logpdf(x))
+        
+    def logpdf(self, x):
+        return np.sum([g[0].logpdf(x) for g in self.gaussians], axis = 0)
 
-def make_mixtures(folder, rel_error = 0.03, error = False):
+def make_mixtures(folder, out_folder = '.', rel_error = 0.1, error = False):
     """
     Create gaussian mixture for stars observed in globular clusters.
     If no associated uncertainty is available, a relative error is used.
     
     Arguments:
-        str or Path Folder: path to stars
-        double rel_error:   relative uncertainty, default 3%
-        bool error:         whether to return a no-errors flag or not
+        str or Path folder:     path to stars
+        str or path out_folder: path for individual star reconstruction
+        double rel_error:       relative uncertainty, default 3%
+        bool error:             whether to return a no-errors flag or not
     
     Returns:
         list:       mixtures
@@ -32,10 +37,11 @@ def make_mixtures(folder, rel_error = 0.03, error = False):
         bool:       error flag (optional)
     """
     parent_folder = Path(folder).parent
-    means = []
-    covs  = []
-    names = []
-    err   = []
+    means    = []
+    covs     = []
+    names    = []
+    err      = []
+    mixtures = []
     flag_glob_err = False
     for star in Path(folder).glob('*.[tc][xs][tv]'):
         star_name = star.parts[-1].split('.')[0]
@@ -57,7 +63,12 @@ def make_mixtures(folder, rel_error = 0.03, error = False):
         f.write('\n'.join(err))
     # Build mixtures
     bounds   = np.array([np.min([m.min() for m in means])-3*np.sqrt(np.max([c.max() for c in covs])), np.max([m.max() for m in means])+3*np.sqrt(np.max([c.max() for c in covs]))])
-    mixtures = make_gaussian_mixture(means, covs, bounds = bounds, names = names, out_folder = parent_folder, save = True, save_samples = True, probit = False)
+    for mi, ci, name in zip(means, covs, names):
+        star_folder = Path(out_folder, name)
+        if not star_folder.exists():
+            star_folder.mkdir(parents = True)
+        # One gaussian mixture per epoch
+        mixtures.append(make_gaussian_mixture(mi.T, ci.T, bounds = bounds, names = ['epoch_{}'.format(i+1) for i in range(len(mi))], out_folder = star_folder, save = True, save_samples = True, probit = False))
     if not error:
         return mixtures, bounds, names
     else:
@@ -83,13 +94,14 @@ def find_mean_weight(draws, vel_disp = 5.):
     max_p  = np.max(prob)
     return mu, max_p/norm(mu, vel_disp).pdf(mu)
 
-def probability_single_star(star, median, mu, weight, bounds, vel_disp = 5., n_pts = 1e5):
+def probability_single_star(epochs, rv_star, rv_dist, mu, weight, bounds, vel_disp = 5., n_pts = 1e4):
     """
     Probability for an object to be a single star.
     
     Arguments:
-        mixture star:      mixture representing the (potentially multi-epoch) observations
-        callable median:   (H)DPGMM median reconstructions of the radial velocity distribution
+        mixture epochs:    mixture representing the (potentially multi-epoch) observations
+        mixture rv_star:   (H)DPGMM reconstructions of the radial velocity distribution of the star
+        mixture rv_dist:   (H)DPGMM reconstructions of the radial velocity distribution of the cluster
         double mu:         mean of the single star distribution. If None, is inferred from draws directly.
         double weight:     relative weight of the single star component in the overall radial velocity distribution. If None, is inferred from draws directly.
         np.ndarray bounds: bounds for integration
@@ -100,14 +112,13 @@ def probability_single_star(star, median, mu, weight, bounds, vel_disp = 5., n_p
         double: probability for the object to be a single star
     """
     # Integrals
-    bounds      = np.atleast_2d(bounds)
-    single_dist = norm(mu, vel_disp)
-    x           = np.linspace(bounds[0,0], bounds[0,1], int(n_pts))
-    dx          = x[1]-x[0]
-    non_par     = np.sum(median.pdf(x)*star.pdf(x)*dx)
-    p_single    = np.sum(single_dist.pdf(x)*star.pdf(x)*dx)
-    p_binary    = (non_par - weight*p_single)/(1. - weight)
-    return p_single, np.max([p_binary, 0]) # accounts for potential numerical error when p_single ~ p_nonpar (w ~ 1)
+    bounds = np.atleast_2d(bounds)
+    with np.errstate(divide = 'ignore'): # Suppress warning for underflows
+        logP_single = np.log(MC_integral(gaussian_product(epochs), norm(mu, vel_disp), n_draws = int(n_pts), error = False))
+        logP_binary = np.sum([np.log(MC_integral(rv_star, e, n_draws = int(n_pts), error = False)) for e in epochs])
+    # Numerical stability
+    norm_val = np.max([logP_binary, logP_single])
+    return np.exp(logP_single - norm_val), np.exp(logP_binary - norm_val)
 
 def variability_test_single(means, covs, threshold = 4):
     """

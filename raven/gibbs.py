@@ -1,6 +1,5 @@
 import numpy as np
 from scipy.stats import beta
-from tqdm import tqdm
 
 class Gibbs:
     """
@@ -68,7 +67,7 @@ class Gibbs:
         self.single_fraction.append(beta(self.n_single + self.alpha/2., self.n_binary + self.alpha/2.).rvs())
         self.samples.append(np.copy(self.assignments))
     
-    def run(self, n_samples = 1e3):
+    def run(self, n_samples = 1e2):
         """
         Sample from the assignments space.
         
@@ -79,6 +78,6 @@ class Gibbs:
             np.ndarray: single_fraction samples
             np.ndarray: p_single for each star
         """
-        for _ in tqdm(range(int(n_samples)), desc = 'Sampling'):
+        for _ in range(int(n_samples)):
             self.draw_sample()
         return self.single_fraction, np.mean(self.samples, axis = 0)
