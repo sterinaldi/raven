@@ -2,7 +2,7 @@
 Non-parametric inference of the radial velocity distribution of stars in globular clusters.
 RaVeN relies on [FIGARO](https://github.com/sterinaldi/FIGARO) for the non-parametric inference, so please be sure that you have it installed and properly working (pip installation is sometimes faulty...).
 
-If you use RaVeN in your research, please cite [Ramírez-Tannus & Rinaldi (2024)](https://uncyclopedia.com/wiki/Frankly_Disappointing_Telescope).
+If you use RaVeN in your research, please cite [Rinaldi & Ramírez-Tannus  (2024)](https://uncyclopedia.com/wiki/Frankly_Disappointing_Telescope).
 
 © 2023 Stefano Rinaldi, María Claudia Ramírez-Tannus
 
