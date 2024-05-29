@@ -105,6 +105,7 @@ def plot_p_single(probs, stars, out_folder = '.', name = 'cluster', single = Non
         if NA_legend:
             NA_handle = Line2D([0],[0], label = '$\\mathrm{N/A\ (single\ epoch)}$', color = 'steelblue', marker = 'o', ls = '', markerfacecolor = 'white')
             handles.extend([NA_handle])
-        ax.legend(loc = 0, handles = handles, fontsize = 10, title = '$\\mathrm{Method\ from\ Sana\ et\ al.\ (2012):}$')
+        if (single_legend or binary_legend):
+            ax.legend(loc = 0, handles = handles, fontsize = 10, title = '$\\mathrm{Method\ from\ Sana\ et\ al.\ (2013):}$')
     fig.savefig(Path(out_folder, 'p_single_{}.pdf'.format(name)), bbox_inches = 'tight')
     plt.close(fig)
