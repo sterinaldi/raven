@@ -1,0 +1,54 @@
+[build-system]
+requires = [
+    "oldest-supported-numpy",
+    "setuptools>=42",
+    "wheel",
+    "build",
+    ]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ['raven']
+
+[project]
+name = 'raven'
+description = 'RaVeN: Radial Velocities, Nonparametric'
+version = '1.0.0'
+requires-python = '< 3.12'
+readme = {file = "README.md", content-type = "text/markdown"}
+license = {file = "LICENSE"}
+keywords = ['hierarchical', '(H)DPGMM', 'inference', 'radial velocity', 'clusters']
+authors = [
+  {name = "Stefano Rinaldi", email = "stefano.rinaldi@uni-heidelberg.de"},
+  {name = "María Claudia Ramírez-Tannus", email = "ramirez@mpia.de"},
+  ]
+
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.6",
+  "Programming Language :: Python :: 3.7",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Topic :: Scientific/Engineering :: Astronomy",
+  "Topic :: Scientific/Engineering :: Physics",
+]
+
+dependencies = [
+    "numpy",
+    "scipy",
+    "matplotlib != 3.6.3",
+    "tqdm",
+    "figaro",
+    ]
+
+[project.urls]
+Repository = "https://github.com/sterinaldi/raven.git"
+Issues = "https://github.com/sterinaldi/raven/issues"
+
+[project.scripts]
+raven = "raven.raven:main"
