@@ -10,7 +10,6 @@ from figaro.mixture import HDPGMM
 from figaro.utils import get_priors, rvs_median
 from figaro.load import save_density, load_density, load_data
 from figaro.plot import plot_median_cr as figaro_plot_median_cr
-from figaro import plot_settings
 
 from raven.utils import make_mixtures, find_mean_weight, probability_single_star, variability_test_single
 from raven.gibbs import Gibbs
@@ -25,7 +24,7 @@ def main():
     parser.add_option("--name", type = "string", dest = "h_name", help = "Name to be given to hierarchical inference files. Default: same name as samples folder parent directory", default = None)
     parser.add_option("-p", "--postprocess", dest = "postprocess", action = 'store_true', help = "Postprocessing", default = False)
     parser.add_option("--skip_stars", dest = "skip_stars", action = 'store_true', help = "Skip reconstruction of individual stars", default = False)
-    parser.add_option("--symbol", type = "string", dest = "symbol", help = "LaTeX-style quantity symbol, for plotting purposes", default = 'v_r')
+    parser.add_option("--symbol", type = "string", dest = "symbol", help = "LaTeX-style quantity symbol, for plotting purposes", default = 'v_{cm}')
     parser.add_option("--unit", type = "string", dest = "unit", help = "LaTeX-style quantity unit, for plotting purposes", default = '\\mathrm{km/s}')
     parser.add_option("-d", "--draws", type = "int", dest = "n_draws", help = "Number of draws for hierarchical distribution", default = 10000)
     parser.add_option("--star_draws", type = "int", dest = "n_star_draws", help = "Number of draws for individual stars", default = 1000)
@@ -80,31 +79,31 @@ def main():
                 if not coarse_star_folder.exists():
                     coarse_star_folder.mkdir()
                 epochs, _   = load_data(Path(star_folder, 'events'), verbose = False)
-                mixtures    = load_density(Path(star_folder, 'draws', 'posteriors_single_event.pkl'))
+                mixtures    = load_density(Path(star_folder, 'draws', 'posteriors_single_event.json'), make_comp = False)
                 # Individual star analysis
                 # Fine structure
                 prior_pars  = get_priors(np.atleast_2d(bounds), std = options.sigma_prior_star, probit = False, hierarchical = True)
                 mix         = HDPGMM(np.atleast_2d(bounds), prior_pars = prior_pars, probit = False)
                 draws_fine  = [mix.density_from_samples(mixtures) for _ in range(options.n_star_draws)]
                 # Save density
-                save_density(draws_fine, folder = fine_star_folder, name = 'draws_'+star, ext = 'pkl')
+                save_density(draws_fine, folder = fine_star_folder, name = 'draws_'+star, ext = 'json')
                 individual_star_draws_fine.append(draws_fine)
                 # Coarse structure
                 prior_pars   = get_priors(np.atleast_2d(bounds), probit = False, hierarchical = True)
                 mix          = HDPGMM(np.atleast_2d(bounds), prior_pars = prior_pars, probit = False)
                 draws_coarse = [mix.density_from_samples(mixtures) for _ in range(options.n_star_draws)]
                 # Save density
-                save_density(draws_coarse, folder = coarse_star_folder, name = 'draws_'+star, ext = 'pkl')
+                save_density(draws_coarse, folder = coarse_star_folder, name = 'draws_'+star, ext = 'json')
                 individual_star_draws_coarse.append(draws_coarse)
                 # Plot
                 figaro_plot_median_cr(draws_fine, bounds = bounds, out_folder = star_folder, name = star, label = options.symbol, unit = options.unit)
             individual_star_draws_fine   = np.array(individual_star_draws_fine)
             individual_star_draws_coarse = np.array(individual_star_draws_coarse)
-            save_density(individual_star_draws_fine, folder = output_individual, name = 'draws_individual_objects_fine', ext = 'pkl')
-            save_density(individual_star_draws_coarse, folder = output_individual, name = 'draws_individual_objects_coarse', ext = 'pkl')
+            save_density(individual_star_draws_fine, folder = output_individual, name = 'draws_individual_objects_fine', ext = 'json')
+            save_density(individual_star_draws_coarse, folder = output_individual, name = 'draws_individual_objects_coarse', ext = 'json')
         else:
-            individual_star_draws_fine   = load_density(Path(output_individual, 'draws_individual_objects_fine.pkl'))
-            individual_star_draws_coarse = load_density(Path(output_individual, 'draws_individual_objects_coarse.pkl'))
+            individual_star_draws_fine   = load_density(Path(output_individual, 'draws_individual_objects_fine.json'), make_comp = False)
+            individual_star_draws_coarse = load_density(Path(output_individual, 'draws_individual_objects_coarse.json'), make_comp = False)
         # Draws from median RV posteriors
         events = np.array([rvs_median(d, 1000) for d in individual_star_draws_fine])
         # Run hierarchical analysis
@@ -113,10 +112,10 @@ def main():
         mix        = HDPGMM(np.atleast_2d(bounds), prior_pars = prior_pars, probit = False)
         draws      = np.array([mix.density_from_samples(individual_star_draws_copy) for _ in tqdm(range(options.n_draws), desc = 'NP RV cluster')])
         # Save draws
-        save_density(draws, folder = output_draws, name = 'draws_'+options.h_name, ext = 'pkl')
+        save_density(draws, folder = output_draws, name = 'draws_'+options.h_name, ext = 'json')
     else:
-        individual_star_draws_coarse = load_density(Path(output_individual, 'draws_individual_objects_coarse.pkl'))
-        draws                        = load_density(Path(output_draws, 'draws_'+options.h_name+'.pkl'))
+        individual_star_draws_coarse = load_density(Path(output_individual, 'draws_individual_objects_coarse.json'), make_comp = False)
+        draws                        = load_density(Path(output_draws, 'draws_'+options.h_name+'.json'), make_comp = False)
     mu, weight = find_mean_weight(draws, options.vel_disp)
     # Plot
     plot_median_cr(draws, mu = mu, vel_disp = options.vel_disp, weight = weight, bounds = options.plot_bounds[0], out_folder = options.output, name = options.h_name, label = options.symbol, unit = options.unit)

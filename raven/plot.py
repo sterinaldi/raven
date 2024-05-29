@@ -1,10 +1,12 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
+from matplotlib import rcParams
 from scipy.stats import norm
 from pathlib import Path
 from figaro.plot import plot_median_cr as figaro_plot_median_cr
 from figaro import plot_settings
+rcParams["axes.grid"] = False
 
 def plot_median_cr(draws, mu, weight, vel_disp, *args, **kwargs):
     single_pdf = lambda x: weight*norm(mu, vel_disp).pdf(x)

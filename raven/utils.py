@@ -68,7 +68,7 @@ def make_mixtures(folder, out_folder = '.', rel_error = 0.1, error = False):
         if not star_folder.exists():
             star_folder.mkdir(parents = True)
         # One gaussian mixture per epoch
-        mixtures.append(make_gaussian_mixture(mi.T, ci.T, bounds = bounds, names = ['epoch_{}'.format(i+1) for i in range(len(mi))], out_folder = star_folder, save = True, save_samples = True, probit = False))
+        mixtures.append(make_gaussian_mixture(mi.T, ci.T, bounds = bounds, names = ['epoch_{}'.format(i+1) for i in range(len(mi))], out_folder = star_folder, save = True, save_samples = True, probit = False, make_comp = False))
     if not error:
         return mixtures, bounds, names
     else:
