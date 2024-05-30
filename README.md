@@ -1,13 +1,10 @@
-# RaVeN
-Non-parametric inference of the radial velocity distribution of stars in globular clusters.
-RaVeN relies on [FIGARO](https://github.com/sterinaldi/FIGARO) for the non-parametric inference, so please be sure that you have it installed and properly working (pip installation is sometimes faulty...).
-
-If you use RaVeN in your research, please cite [Rinaldi & Ramírez-Tannus  (2024)](https://uncyclopedia.com/wiki/Frankly_Disappointing_Telescope).
+# RAVEN – RAdial VElocities, Non-parametric
+Non-parametric inference of the radial velocity distribution of stars in globular clusters. If you use RAVEN in your research, please cite [Rinaldi & Ramírez-Tannus  (2024)](https://uncyclopedia.com/wiki/Frankly_Disappointing_Telescope).
 
 © 2023 Stefano Rinaldi, María Claudia Ramírez-Tannus
 
 ## Basic usage
-Install RaVeN with `python setup.py install` (add `--user` if you don't have admin privileges on your machine). The folder structure that RaVeN expects is the following:
+Install RAVEN with `pip install .`. The folder structure that RaVeN expects is the following:
 
 ```
 cluster
@@ -19,7 +16,7 @@ cluster
 
 The naming convention does not matter as long as the folder structure is respected. Each .txt file must contain two columns with radial velocity measurement and error for each available epoch (0 if no error is available).
 
-To analyse a cluster with RaVeN, simply run the command line instruction `raven -i path/to/cluster/stars`. If you want to specify some bounds for the output plot, add the option `-b "[vmin, vmax]"` (remember the quotation marks). A different number of draws can be set with `-n` and the non-parametric inference, once performed at least one time, can be skipped with `-p`. The available options can be displayed with `raven -h`. After the run, the folder will look like this:
+To analyse a cluster with RAVEN, simply run the command line instruction `raven -i path/to/cluster/stars`. If you want to specify some bounds for the output plot, add the option `-b "[vmin, vmax]"` (remember the quotation marks). A different number of draws can be set with `-n` and the non-parametric inference, once performed at least one time, can be skipped with `-p`. The available options can be displayed with `raven -h`. After the run, the folder will look like this:
 
 ```
 cluster
@@ -28,11 +25,11 @@ cluster
 │   ├─ star_2.txt
 │   └─ star_3.txt
 ├── draws
-│   ├─ star_1.pkl
-│   ├─ star_2.pkl
-│   ├─ star_3.pkl
-│   ├─ draws_cluster.pkl
-│   └─ posteriors_single_event.pkl
+│   ├─ star_1.json
+│   ├─ star_2.json
+│   ├─ star_3.json
+│   ├─ draws_cluster.json
+│   └─ posteriors_single_event.json
 ├── events
 │   ├─ star_1.txt
 │   ├─ star_2.txt
@@ -47,7 +44,7 @@ cluster
 ```
 
 ### Output files overview
-Content of the output files produced by RaVeN:
+Content of the output files produced by RAVEN:
 
 * `cluster.pdf`: radial velocity probability density;
 * `single_fraction_cluster.pdf`: posterior probability density for the fraction of single stars;
