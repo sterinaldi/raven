@@ -61,7 +61,7 @@ def main():
         options.single = None
     # Plot bounds
     if options.plot_bounds is not None:
-        options.plot_bounds = np.array(np.atleast_2d(eval(options.plot_bounds)), dtype = np.float64)
+        options.plot_bounds = np.array(np.atleast_2d(eval(options.plot_bounds)), dtype = np.float64)[0]
     else:
         options.plot_bounds = bounds
     # Reconstruction
