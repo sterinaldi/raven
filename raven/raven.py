@@ -80,6 +80,9 @@ def main():
                     coarse_star_folder.mkdir()
                 epochs, _   = load_data(Path(star_folder, 'events'), verbose = False)
                 mixtures    = load_density(Path(star_folder, 'draws', 'posteriors_single_event.json'), make_comp = False)
+                # Issue with single-epoch stars
+                if len(np.shape(mixtures)) == 1:
+                    mixtures = [mixtures]
                 # Individual star analysis
                 # Fine structure
                 prior_pars  = get_priors(np.atleast_2d(bounds), std = options.sigma_prior_star, probit = False, hierarchical = True)
@@ -118,7 +121,7 @@ def main():
         draws                        = load_density(Path(output_draws, 'draws_'+options.h_name+'.json'), make_comp = False)
     mu, weight = find_mean_weight(draws, options.vel_disp)
     # Plot
-    plot_median_cr(draws, mu = mu, vel_disp = options.vel_disp, weight = weight, bounds = options.plot_bounds[0], out_folder = options.output, name = options.h_name, label = options.symbol, unit = options.unit)
+    plot_median_cr(draws, mu = mu, vel_disp = options.vel_disp, weight = weight, bounds = options.plot_bounds, out_folder = options.output, name = options.h_name, label = options.symbol, unit = options.unit)
     
     # Compute probability for each object (Gibbs sampling)
     single_fraction = []
