@@ -11,7 +11,11 @@ rcParams["axes.grid"] = False
 def plot_median_cr(draws, mu, weight, vel_disp, *args, **kwargs):
     single_pdf = lambda x: weight*norm(mu, vel_disp).pdf(x)
     figaro_plot_median_cr(draws, injected = single_pdf, injected_label = '\\sigma_\\mathrm{V} = '+'{0:.1f}'.format(vel_disp)+'\ \\mathrm{km/s}', hierarchical = True, *args, **kwargs)
+    # Removing unwanted FIGARO plot
     Path(kwargs.get('out_folder'), 'log_observed_{}.pdf'.format(kwargs.get('name'))).unlink()
+    # Removing observed from file names
+    Path(kwargs.get('out_folder'), 'observed_{}.pdf'.format(kwargs.get('name'))).rename(Path(kwargs.get('out_folder'), '{}.pdf'.format(kwargs.get('name'))))
+    Path(kwargs.get('out_folder'), 'prob_observed_{}.txt'.format(kwargs.get('name'))).rename(Path(kwargs.get('out_folder'), 'prob_{}.txt'.format(kwargs.get('name'))))
 
 def plot_single_fraction(samples, out_folder = '.', name = 'cluster'):
     l_f, m_f, u_f = np.percentile(samples, [16,50,84])
