@@ -1,8 +1,6 @@
 # RAVEN – RAdial VElocity, Non-parametric
 Non-parametric inference of the radial velocity distribution of stars in globular clusters. If you use RAVEN in your research, please cite [Rinaldi & Ramírez-Tannus  (2024)](https://uncyclopedia.com/wiki/Frankly_Disappointing_Telescope).
 
-© 2023 Stefano Rinaldi, María Claudia Ramírez-Tannus
-
 ## Basic usage
 Install RAVEN with 
 ```
