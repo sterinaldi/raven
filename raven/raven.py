@@ -141,7 +141,7 @@ def main():
     idx = np.argsort(mm)
     with open(Path(options.output, 'p_single_{}.txt'.format(options.h_name)), 'w') as f:
         f.write('# star p_single\n')
-        [f.write('{0}\t{1:.2f}+{2:.2f}-{3:.2f}\n'.format(name, p, u-p, p-l)) for name, p, u, l in zip(np.array(names)[idx[::-1]], mm[idx[::-1]], ll[idx[::-1]], uu[idx[::-1]])]
+        [f.write('{0}\t{1:.2f}+{2:.2f}-{3:.2f}\n'.format(name, p, u-p, p-l)) for name, p, u, l in zip(np.array(names)[idx[::-1]], mm[idx[::-1]], uu[idx[::-1]], ll[idx[::-1]])]
     # Plot single star fractions samples
     plot_single_fraction(single_fraction, out_folder = options.output, name = options.h_name)
     plot_p_single(probs = prob_single.T[idx], stars = np.array(names)[idx], out_folder = options.output, name = options.h_name, single = options.single)
