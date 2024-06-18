@@ -28,7 +28,7 @@ def main():
     parser.add_option("--unit", type = "string", dest = "unit", help = "LaTeX-style quantity unit, for plotting purposes", default = '\\mathrm{km/s}')
     parser.add_option("-d", "--draws", type = "int", dest = "n_draws", help = "Number of draws for hierarchical distribution", default = 10000)
     parser.add_option("--star_draws", type = "int", dest = "n_star_draws", help = "Number of draws for individual stars", default = 1000)
-    parser.add_option("-s", "--sigma_prior", dest = "sigma_prior", type = "float", help = "Expected standard deviation (prior) for hierarchical inference.", default = 3.)
+    parser.add_option("-s", "--sigma_prior", dest = "sigma_prior", type = "float", help = "Expected standard deviation (prior) for hierarchical inference.", default = 2.)
     parser.add_option("--sigma_prior_star", dest = "sigma_prior_star", type = "float", help = "Expected standard deviation (prior) for object RV inference.", default = 1.)
     parser.add_option("-r", "--rel_error", dest = "rel_error", type = "float", help = "Relative error for measurements without uncertainties. Default 10%", default = 0.1)
     parser.add_option("-v", "--vel_disp", dest = "vel_disp", type = "float", help = "Velocity dispersion for single stars. Default 5 km/s", default = 5.)
