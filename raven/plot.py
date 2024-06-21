@@ -10,12 +10,16 @@ rcParams["axes.grid"] = False
 
 def plot_median_cr(draws, mu, weight, vel_disp, *args, **kwargs):
     single_pdf = lambda x: weight*norm(mu, vel_disp).pdf(x)
-    figaro_plot_median_cr(draws, injected = single_pdf, injected_label = '\\sigma_\\mathrm{V} = '+'{0:.1f}'.format(vel_disp)+'\ \\mathrm{km/s}', hierarchical = True, *args, **kwargs)
-    # Removing unwanted FIGARO plot
-    Path(kwargs.get('out_folder'), 'log_observed_{}.pdf'.format(kwargs.get('name'))).unlink()
-    # Removing observed from file names
-    Path(kwargs.get('out_folder'), 'observed_{}.pdf'.format(kwargs.get('name'))).rename(Path(kwargs.get('out_folder'), '{}.pdf'.format(kwargs.get('name'))))
-    Path(kwargs.get('out_folder'), 'prob_observed_{}.txt'.format(kwargs.get('name'))).rename(Path(kwargs.get('out_folder'), 'prob_{}.txt'.format(kwargs.get('name'))))
+    fig = figaro_plot_median_cr(draws, injected = single_pdf, injected_label = '\\sigma_\\mathrm{V} = '+'{0:.1f}'.format(vel_disp)+'\ \\mathrm{km/s}', hierarchical = True, *args, **kwargs)
+    try:
+        # Removing unwanted FIGARO plot
+        Path(kwargs.get('out_folder'), 'log_observed_{}.pdf'.format(kwargs.get('name'))).unlink()
+        # Removing observed from file names
+        Path(kwargs.get('out_folder'), 'observed_{}.pdf'.format(kwargs.get('name'))).rename(Path(kwargs.get('out_folder'), '{}.pdf'.format(kwargs.get('name'))))
+        Path(kwargs.get('out_folder'), 'prob_observed_{}.txt'.format(kwargs.get('name'))).rename(Path(kwargs.get('out_folder'), 'prob_{}.txt'.format(kwargs.get('name'))))
+    except:
+        pass
+    return fig
 
 def plot_single_fraction(samples, out_folder = '.', name = 'cluster'):
     l_f, m_f, u_f = np.percentile(samples, [16,50,84])
@@ -52,24 +56,32 @@ def plot_p_single(probs, stars, out_folder = '.', name = 'cluster', single = Non
     NA_legend     = False
     binary_legend = False
     single_legend = False
+    photo_legend  = False
     sana_flag = False
     for i, (p, s) in enumerate(zip(probs, stars)):
         ll, l, m, u, uu = np.percentile(p, [5,16,50,84,95])
         if single is not None:
             sana_flag = True
             if single_flag[s] is not None:
-                if single_flag[s]:
+                if single_flag[s][0]:
                     single_legend = True
                     marker    = '*'
                     color     = 'limegreen'
                     facecolor = color
                     edgecolor = color
                 else:
-                    binary_legend = True
-                    marker    = 'x'
-                    color     = 'firebrick'
-                    facecolor = color
-                    edgecolor = None
+                    if single_flag[s][1]:
+                        binary_legend = True
+                        marker    = 'x'
+                        color     = 'firebrick'
+                        facecolor = color
+                        edgecolor = None
+                    else:
+                        photo_legend = True
+                        marker    = 'v'
+                        color     = 'firebrick'
+                        facecolor = 'w'
+                        edgecolor = color
             else:
                 NA_legend = True
                 marker    = 'o'
@@ -106,10 +118,13 @@ def plot_p_single(probs, stars, out_folder = '.', name = 'cluster', single = Non
         if binary_legend:
             binary      = Line2D([0],[0], label = '$\\mathrm{Binary}$', color = 'firebrick', marker = 'x', ls = '')
             handles.extend([binary])
+        if binary_legend:
+            binary      = Line2D([0],[0], label = '$\\mathrm{Intrinsic\ variable}$', color = 'firebrick', marker = 'v', ls = '', markerfacecolor = 'white')
+            handles.extend([binary])
         if NA_legend:
             NA_handle = Line2D([0],[0], label = '$\\mathrm{N/A\ (single\ epoch)}$', color = 'steelblue', marker = 'o', ls = '', markerfacecolor = 'white')
             handles.extend([NA_handle])
-        if (single_legend or binary_legend):
+        if (single_legend or binary_legend or photo_legend):
             ax.legend(loc = 0, handles = handles, fontsize = 10, title = '$\\mathrm{Method\ from\ Sana\ et\ al.\ (2013):}$')
     fig.savefig(Path(out_folder, 'p_single_{}.pdf'.format(name)), bbox_inches = 'tight')
     plt.close(fig)
