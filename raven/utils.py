@@ -3,6 +3,7 @@ from pathlib import Path
 from itertools import combinations
 from scipy.stats import norm
 from scipy.interpolate import interp1d
+from scipy.spatial.distance import jensenshannon as js
 from figaro.utils import make_gaussian_mixture
 from figaro.montecarlo import MC_integral
 
@@ -74,7 +75,7 @@ def make_mixtures(folder, out_folder = '.', rel_error = 0.1, error = False):
     else:
         return mixtures, bounds, names, not(flag_glob_err)
     
-def find_mean_weight(draws, vel_disp = 5.):
+def find_mean_weight(draws, vel_disp = None):
     """
     Find the mean (maximum of the median) and relative weight of the 5 km/s std Gaussian distribution of single stars
     
@@ -92,7 +93,15 @@ def find_mean_weight(draws, vel_disp = 5.):
     prob   = prob/np.sum(prob*(x[1]-x[0]))
     mu     = x[np.argmax(prob)]
     max_p  = np.max(prob)
-    return mu, max_p/norm(mu, vel_disp).pdf(mu)
+    if vel_disp is None:
+        interp_med = interp1d(x, prob)
+        sigma      = np.linspace(0.5,10,200)
+        dist       = np.zeros(len(sigma))
+        for i, s in enumerate(sigma):
+            xi = np.linspace(mu-s, mu+s,100)
+            dist[i] = js(norm(mu,s).pdf(xi), interp_med(xi))
+        vel_disp = sigma[np.argmin(dist)]
+    return mu, max_p/norm(mu, vel_disp).pdf(mu), vel_disp
 
 def probability_single_star(epochs, rv_star, rv_dist, mu, weight, bounds, vel_disp = 5., n_pts = 1e4):
     """
@@ -120,18 +129,22 @@ def probability_single_star(epochs, rv_star, rv_dist, mu, weight, bounds, vel_di
     norm_val = np.max([logP_binary, logP_single])
     return np.exp(logP_single - norm_val), np.exp(logP_binary - norm_val)
 
-def variability_test_single(means, covs, threshold = 4):
+def variability_test_single(means, covs, threshold = 4, min_variation = 20):
     """
-    Variability test introduced in Eq. 1 of Sana et al. (2012) (https://arxiv.org/pdf/1209.4638.pdf)
+    Variability test introduced in Eq. 1 of Sana et al. (2013) (https://arxiv.org/pdf/1209.4638.pdf)
     """
     sigmas   = np.array([np.abs(mc[0] - mc[1])/np.sqrt(sc[0] + sc[1]) for mc, sc in zip(combinations(means, 2), combinations(covs, 2))])
+    deltas   = np.array([np.abs(mc[0] - mc[1]) for mc in combinations(means, 2)])
     if len(sigmas) == 0:
         return None
     else:
         s_detect = np.max(sigmas)
     if s_detect > threshold:
         # Binary star
-        return False
+        if np.max(deltas) > min_variation:
+            return (False, True)
+        else:
+            return (False, False)
     else:
         # Single star
-        return True
+        return (True, None)
