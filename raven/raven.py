@@ -28,10 +28,10 @@ def main():
     parser.add_option("--unit", type = "string", dest = "unit", help = "LaTeX-style quantity unit, for plotting purposes", default = '\\mathrm{km/s}')
     parser.add_option("-d", "--draws", type = "int", dest = "n_draws", help = "Number of draws for hierarchical distribution", default = 10000)
     parser.add_option("--star_draws", type = "int", dest = "n_star_draws", help = "Number of draws for individual stars", default = 1000)
-    parser.add_option("-s", "--sigma_prior", dest = "sigma_prior", type = "float", help = "Expected standard deviation (prior) for hierarchical inference.", default = 2.)
+    parser.add_option("-s", "--sigma_prior", dest = "sigma_prior", type = "float", help = "Expected standard deviation (prior) for hierarchical inference.", default = 1.)
     parser.add_option("--sigma_prior_star", dest = "sigma_prior_star", type = "float", help = "Expected standard deviation (prior) for object RV inference.", default = 1.)
     parser.add_option("-r", "--rel_error", dest = "rel_error", type = "float", help = "Relative error for measurements without uncertainties. Default 10%", default = 0.1)
-    parser.add_option("-v", "--vel_disp", dest = "vel_disp", type = "float", help = "Velocity dispersion for single stars. Default 5 km/s", default = 5.)
+    parser.add_option("-v", "--vel_disp", dest = "vel_disp", type = "float", help = "Velocity dispersion for single stars. Default 5 km/s", default = None)
     parser.add_option("--n_pts", dest = "n_pts", type = "float", help = "Number of points for probability calculation", default = 10000)
     parser.add_option("--n_samples", dest = "n_samples", type = "float", help = "Number of samples for single fraction calculation", default = 1000)
     parser.add_option("--sana_variability", dest = "sana_variability", action = 'store_true', help = "Use variability test from Sana et al (2012)", default = False)
@@ -119,7 +119,7 @@ def main():
     else:
         individual_star_draws_coarse = load_density(Path(output_individual, 'draws_individual_objects_coarse.json'), make_comp = False)
         draws                        = load_density(Path(output_draws, 'draws_'+options.h_name+'.json'), make_comp = False)
-    mu, weight = find_mean_weight(draws, options.vel_disp)
+    mu, weight, options.vel_disp = find_mean_weight(draws, options.vel_disp)
     # Plot
     plot_median_cr(draws, mu = mu, vel_disp = options.vel_disp, weight = weight, bounds = options.plot_bounds, out_folder = options.output, name = options.h_name, label = options.symbol, unit = options.unit)
     
