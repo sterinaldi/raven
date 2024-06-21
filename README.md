@@ -1,5 +1,5 @@
 # RAVEN – RAdial VElocity, Non-parametric
-Non-parametric inference of the radial velocity distribution of stars in globular clusters. If you use RAVEN in your research, please cite [Rinaldi & Ramírez-Tannus  (2024)](https://uncyclopedia.com/wiki/Frankly_Disappointing_Telescope).
+Non-parametric inference of the radial velocity distribution of stars in globular clusters. If you use RAVEN in your research, please cite [Rinaldi & Ramírez-Tannus (2024)](https://uncyclopedia.com/wiki/Frankly_Disappointing_Telescope). The main result from this paper can be reproduced using the content of this repository: if you are interested in doing so, please find the instructions at the bottom of this page.
 
 ## Basic usage
 Install RAVEN with 
@@ -57,3 +57,13 @@ Content of the output files produced by RAVEN:
 * `p_single_cluster.txt`: objects included in the cluster ranked by their probability of being single stars;
 * `p_single_cluster.pdf`: fancy plot displaying the probability of each object of being a single star;
 * `no_errors.txt`: if some of the measurements do not have an associated uncertainty, this file contains the relative uncertainty that has been associated with the measurements.
+
+## Carina Nebula
+[Rinaldi & Ramírez-Tannus (2024)](https://uncyclopedia.com/wiki/Frankly_Disappointing_Telescope) presents the analysis of 31 O-type stars in the Carina Nebula reported in [Kiminki & Smith (2018)](https://academic.oup.com/mnras/article/477/2/2068/4950625). Our results can be reproduced using the code and data stored in this repository.
+
+Once RAVEN is installed, move to the `carina_nebula` directory and run the analysis:
+```
+cd carina_nebula
+raven -i stars -b "[-40,60]" --sana_variability
+```
+The analysis should finish in around 10 minutes on a normal laptop. The plots included in the paper are `carina_nebula.pdf` and `p_single_carina_nebula.pdf`.
