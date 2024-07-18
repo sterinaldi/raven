@@ -78,7 +78,7 @@ def plot_p_single(probs, stars, out_folder = '.', name = 'cluster', single = Non
                         edgecolor = None
                     else:
                         photo_legend = True
-                        marker    = 'v'
+                        marker    = 's'
                         color     = 'firebrick'
                         facecolor = 'w'
                         edgecolor = color
@@ -119,7 +119,7 @@ def plot_p_single(probs, stars, out_folder = '.', name = 'cluster', single = Non
             binary      = Line2D([0],[0], label = '$\\mathrm{Binary}$', color = 'firebrick', marker = 'x', ls = '')
             handles.extend([binary])
         if binary_legend:
-            binary      = Line2D([0],[0], label = '$\\mathrm{Intrinsic\ variable}$', color = 'firebrick', marker = 'v', ls = '', markerfacecolor = 'white')
+            binary      = Line2D([0],[0], label = '$\\mathrm{Intrinsic\ variable}$', color = 'firebrick', marker = 's', ls = '', markerfacecolor = 'white')
             handles.extend([binary])
         if NA_legend:
             NA_handle = Line2D([0],[0], label = '$\\mathrm{N/A\ (single\ epoch)}$', color = 'steelblue', marker = 'o', ls = '', markerfacecolor = 'white')
