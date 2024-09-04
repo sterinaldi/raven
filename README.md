@@ -60,12 +60,12 @@ Content of the output files produced by RAVEN:
 * `p_single_cluster.pdf`: fancy plot displaying the probability of each object of being a single star;
 * `no_errors.txt`: if some of the measurements do not have an associated uncertainty, this file contains the relative uncertainty that has been associated with the measurements.
 
-## Trumpler 14
-[Rinaldi & Ramírez-Tannus (2024)](https://uncyclopedia.com/wiki/Frankly_Disappointing_Telescope) presents the analysis of 31 O-type stars in Trumpler 14 reported in [Kiminki & Smith (2018)](https://academic.oup.com/mnras/article/477/2/2068/4950625). Our results can be reproduced using the code and data stored in this repository.
+## Carina Nebula
+[Rinaldi & Ramírez-Tannus (2024)](https://uncyclopedia.com/wiki/Frankly_Disappointing_Telescope) presents the analysis of 31 O-type stars in the Carina Nebula reported in Table 2 of [Kiminki & Smith (2018)](https://academic.oup.com/mnras/article/477/2/2068/4950625). Our results can be reproduced using the code and data stored in this repository.
 
-Once RAVEN is installed, move to the `trumpler_14` directory and run the analysis:
+Once RAVEN is installed, move to the `carina_nebula` directory and run the analysis:
 ```
-cd trumpler_14
+cd carina_nebula
 raven -i stars -b "[-40,60]" --sana_variability
 ```
-The analysis should finish in around 10 minutes on a normal laptop. The plots included in the paper are `trumpler_14.pdf` and `p_single_trumpler_14.pdf`.
+The analysis should finish in around 10 minutes on a normal laptop. The plots included in the paper are `carina_nebula.pdf` and `p_single_carina_nebula.pdf`.
