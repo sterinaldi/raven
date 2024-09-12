@@ -8,24 +8,45 @@ from figaro.plot import plot_median_cr as figaro_plot_median_cr
 from figaro import plot_settings
 rcParams["axes.grid"] = False
 
-def plot_median_cr(draws, mu, weight, vel_disp, *args, **kwargs):
-    single_pdf = lambda x: weight*norm(mu, vel_disp).pdf(x)
-    fig = figaro_plot_median_cr(draws, injected = single_pdf, injected_label = '\\sigma_\\mathrm{V} = '+'{0:.1f}'.format(vel_disp)+'\ \\mathrm{km/s}', hierarchical = True, *args, **kwargs)
-    try:
-        # Removing unwanted FIGARO plot
-        Path(kwargs.get('out_folder'), 'log_observed_{}.pdf'.format(kwargs.get('name'))).unlink()
-        # Removing observed from file names
-        Path(kwargs.get('out_folder'), 'observed_{}.pdf'.format(kwargs.get('name'))).rename(Path(kwargs.get('out_folder'), '{}.pdf'.format(kwargs.get('name'))))
-        Path(kwargs.get('out_folder'), 'prob_observed_{}.txt'.format(kwargs.get('name'))).rename(Path(kwargs.get('out_folder'), 'prob_{}.txt'.format(kwargs.get('name'))))
-    except:
-        pass
+def plot_median_cr(draws, mu, weight, vel_disp, pop_names = None, *args, **kwargs):
+    fig = figaro_plot_median_cr(draws, hierarchical = True, save = False, *args, **kwargs)
+    bounds = kwargs.get('bounds')
+    if bounds is None:
+        bounds = draws[0].bounds[0]
+    x = np.linspace(*bounds, 1000)
+    ax = fig.axes[0]
+    if pop_names is None:
+        pop_names = [None for _ in range(len(mu))]
+    else:
+        pop_names = ['\\mathrm{'+n+'}' for n in pop_names]
+    for m, s, w, n in zip(mu, vel_disp, weight, pop_names):
+        if len(mu) > 1 and n is not None:
+            lab = '${}:\ '.format(n)+'\\sigma_\\mathrm{V} = '+'{0:.1f}'.format(s)+'\ \\mathrm{km/s}$'
+            ax.annotate('${}$'.format(n), (m+s*0.4, w*norm(m, s).pdf(m)*1.01))
+        else:
+            lab = '$\\sigma_\\mathrm{V} = '+'{0:.1f}'.format(s)+'\ \\mathrm{km/s}$'
+        ax.plot(x, w*norm(m, s).pdf(x), color = 'red', label = lab)
+    ax.set_yscale('linear')
+    handles, labels = ax.get_legend_handles_labels()
+    if len(mu) > 1:
+        pop_entry = Line2D([0],[0], label = '$\\mathrm{Populations:}$', color = 'red')
+        handles.insert(1, pop_entry)
+    leg = ax.legend(loc = 0, handles = handles)
+    if len(mu) > 1:
+        for item in leg.legendHandles[2:]:
+            item.set_visible(False)
+    fig.savefig(Path(kwargs.get('out_folder'), '{}.pdf'.format(kwargs.get('name'))), bbox_inches = 'tight')
     return fig
 
-def plot_single_fraction(samples, out_folder = '.', name = 'cluster'):
-    l_f, m_f, u_f = np.percentile(samples, [16,50,84])
-    label = '$w_\\mathrm{single} ='+'{0:.2f}'.format(m_f)+'^{+'+'{0:.2f}'.format(u_f-m_f)+'}_{-'+'{0:.2f}'.format(m_f-l_f)+'}$'
+def plot_single_fraction(samples, names = None, out_folder = '.', name = 'cluster'):
     fig, ax = plt.subplots()
-    ax.hist(samples, histtype = 'step', density = True, label = label)
+    for i, ss in enumerate(samples):
+        l_f, m_f, u_f = np.percentile(ss, [16,50,84])
+        if names is not None:
+            label = '${}: '.format(names[i])+'w_\\mathrm{single} ='+'{0:.2f}'.format(m_f)+'^{+'+'{0:.2f}'.format(u_f-m_f)+'}_{-'+'{0:.2f}'.format(m_f-l_f)+'}$'
+        else:
+            label = '$w_\\mathrm{single} ='+'{0:.2f}'.format(m_f)+'^{+'+'{0:.2f}'.format(u_f-m_f)+'}_{-'+'{0:.2f}'.format(m_f-l_f)+'}$'
+        ax.hist(ss, histtype = 'step', density = True, label = label)
     ax.set_xlabel('$w_\\mathrm{single}$')
     ax.set_ylabel('$p(w_\\mathrm{single})$')
     leg = ax.legend(handlelength=0, handletextpad=0)

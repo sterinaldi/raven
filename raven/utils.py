@@ -4,8 +4,13 @@ from itertools import combinations
 from scipy.stats import norm
 from scipy.interpolate import interp1d
 from scipy.spatial.distance import jensenshannon as js
+from numba import njit
 from figaro.utils import make_gaussian_mixture
 from figaro.montecarlo import MC_integral
+
+@njit
+def norm_pdf(x, mu, sigma):
+    return np.exp(-0.5*((x-mu)/sigma)**2)/(np.sqrt(2*np.pi)*sigma)
 
 class gaussian_product:
     """
@@ -75,7 +80,7 @@ def make_mixtures(folder, out_folder = '.', rel_error = 0.1, error = False):
     else:
         return mixtures, bounds, names, not(flag_glob_err)
     
-def find_mean_weight(draws, vel_disp = None):
+def find_mean_weight(draws, n_populations = 1, vel_disp = None):
     """
     Find the mean (maximum of the median) and relative weight of the 5 km/s std Gaussian distribution of single stars
     
@@ -87,23 +92,49 @@ def find_mean_weight(draws, vel_disp = None):
         double: mean of the Gaussian distribution
         double: relative weight of the specific feature in the mixture
     """
-    bounds = draws[0].bounds
-    x      = np.linspace(bounds[0,0], bounds[0,1], 10000)
-    prob   = np.median([d.pdf(x) for d in draws], axis = 0)
-    prob   = prob/np.sum(prob*(x[1]-x[0]))
-    mu     = x[np.argmax(prob)]
-    max_p  = np.max(prob)
+    bounds          = draws[0].bounds
+    x               = np.linspace(bounds[0,0], bounds[0,1], 10000)
+    prob            = np.median([d.pdf(x) for d in draws], axis = 0)
+    prob            = prob/np.sum(prob*(x[1]-x[0]))
+    interp_med      = interp1d(x, prob)
+    interp_med_full = interp1d(x, prob)
+    mu = []
+    w  = []
+    infer_sigma = False
     if vel_disp is None:
+        vel_disp    = []
+        sigma       = np.linspace(0.5,10,200)
+        infer_sigma = True
+    elif hasattr(vel_disp, '__iter__'):
+        if not len(vel_disp) == n_populations:
+            raise Exception('Please provide eiter one or n_population values for vel_disp')
+    else:
+        vel_disp = np.ones(n_populations)*vel_disp
+    for j in range(int(n_populations)):
+        mu.append(x[np.argmax(prob)])
+        max_p  = interp_med_full(mu[-1])
+        if infer_sigma:
+            dist       = np.zeros(len(sigma))
+            for i, s in enumerate(sigma):
+                xi = np.linspace(mu[j]-s, mu[j]+s,100)
+                dist[i] = js(norm(mu[j],s).pdf(xi), interp_med(xi))
+            vel_disp.append(sigma[np.argmin(dist)])
+        w.append(max_p/norm(mu[j], vel_disp[j]).pdf(mu[j]))
+        prob      -= w[j]*norm(mu[j], vel_disp[j]).pdf(x)
+        prob       = prob/np.sum(prob*(x[1]-x[0]))
         interp_med = interp1d(x, prob)
-        sigma      = np.linspace(0.5,10,200)
-        dist       = np.zeros(len(sigma))
-        for i, s in enumerate(sigma):
-            xi = np.linspace(mu-s, mu+s,100)
-            dist[i] = js(norm(mu,s).pdf(xi), interp_med(xi))
-        vel_disp = sigma[np.argmin(dist)]
-    return mu, max_p/norm(mu, vel_disp).pdf(mu), vel_disp
+    return mu, w, vel_disp
 
-def probability_single_star(epochs, rv_star, rv_dist, mu, weight, bounds, vel_disp = 5., n_pts = 1e4):
+def probability_population(rv_cm, pop_pars, bounds, idx):
+    if idx == -1:
+        return 1./np.diff(bounds)[0]
+    else:
+        mu_pop = pop_pars[idx][0]
+        s_pop  = pop_pars[idx][1]
+        return np.mean([np.sum(d.w*norm_pdf(d.means.flatten(), mu_pop, np.sqrt(d.covs.flatten() + s_pop**2))) for d in rv_cm])
+    
+
+def probability_single_star(epochs, rv_star, rv_dist, population, bounds, n_pts = 1e4):
     """
     Probability for an object to be a single star.
     
@@ -123,7 +154,7 @@ def probability_single_star(epochs, rv_star, rv_dist, mu, weight, bounds, vel_di
     # Integrals
     bounds = np.atleast_2d(bounds)
     with np.errstate(divide = 'ignore'): # Suppress warning for underflows
-        logP_single = np.log(MC_integral(gaussian_product(epochs), norm(mu, vel_disp), n_draws = int(n_pts), error = False))
+        logP_single = np.log(MC_integral(gaussian_product(epochs), population, n_draws = int(n_pts), error = False))
         logP_binary = np.sum([np.log(MC_integral(rv_star, e, n_draws = int(n_pts), error = False)) for e in epochs])
     # Numerical stability
     norm_val = np.max([logP_binary, logP_single])
