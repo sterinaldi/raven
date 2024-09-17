@@ -115,4 +115,7 @@ class Gibbs:
             self.draw_sample()
         count = [Counter(s) for s in np.array(self.samples_pop).T]
         draw_p_pop = np.array([np.array([c[idx_pop] for idx_pop in range(self.n_pop)])/n_samples for c in count])
-        return self.single_fraction, np.mean(self.samples_single, axis = 0), draw_p_pop
+        self.single_fraction = np.atleast_2d(self.single_fraction)
+        if self.n_pop == 1:
+            self.single_fraction = self.single_fraction.T
+        return np.mean(self.single_fraction, axis = 0), np.mean(self.samples_single, axis = 0), draw_p_pop
