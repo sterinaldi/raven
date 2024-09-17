@@ -144,6 +144,10 @@ def main():
     # Probability for individual populations
     probability_pop = np.atleast_2d([[probability_population(rv_star, pop_pars, bounds, i) for i in range(-options.outliers, int(options.n_populations))] for rv_star in individual_star_draws_fine])
     for _ in tqdm(range(int(options.n_samples)), desc = 'p(single)'):
+        if options.outliers:
+            all_pops = [uniform(bounds[0], np.diff(bounds))] + populations
+        else:
+            all_pops = populations
         # Probability for single stars for each population
         probability_single = np.atleast_2d([[probability_single_star(epochs,
                                                                      rv_star,
@@ -151,7 +155,7 @@ def main():
                                                                      population = pop,
                                                                      bounds = options.plot_bounds,
                                                                      n_pts = int(options.n_pts),
-                                                                     ) for pop in [uniform(bounds[0], np.diff(bounds))] + populations]
+                                                                     ) for pop in all_pops]
                                                                      for epochs, rv_star in zip(star_mixtures, individual_star_draws_coarse)])
         if options.n_populations == 1 and not options.outliers:
             probability_single.reshape((-1,1,2))
@@ -164,8 +168,6 @@ def main():
     prob_single     = np.array(prob_single)
     prob_pop        = np.array([[p[i] for p in prob_pop] for i in range(len(names))])
     single_fraction = np.array(single_fraction).T
-    single_fraction = np.array([np.random.choice(np.concatenate([f for f in single_fraction[i]]), size = int(10*options.n_samples)) for i in range(options.n_populations+options.outliers)])
-    
     if options.n_populations == 1 and not options.outliers:
         np.savetxt(Path(options.output, 'samples_fraction_{}.txt'.format(options.h_name)), single_fraction)
     else:
