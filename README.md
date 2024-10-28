@@ -23,7 +23,7 @@ cluster
 
 The naming convention does not matter as long as the folder structure is respected. Each `.txt` file must contain two columns with radial velocity measurement and error for each available epoch (0 if no error is available).
 
-To analyse a cluster with RAVEN, simply run the command line instruction `raven -i path/to/cluster/stars`. If you want to specify some bounds for the output plot, add the option `-b "[vmin, vmax]"` (remember the quotation marks). A different number of draws can be set with `-n` and the non-parametric inference, once performed at least one time, can be skipped with `-p`. The available options can be displayed with `raven -h`. After the run, the folder will look like this:
+To analyse a cluster with RAVEN, simply run the command line instruction `raven -i path/to/cluster/stars`. If you want to specify some bounds for the output plot, add the option `-b "[vmin, vmax]"` (remember the quotation marks). A different number of draws can be set with `-n` and the non-parametric inference, once performed at least one time, can be skipped with `-p`. RAVEN accounts for the potential presence of multiple populations (`--n_populations N`, where `N` is the expected number of sub-populations) and/or outliers (`--outliers`). The complete list of available options can be displayed with `raven -h`. After the run, the folder will look like this:
 
 ```
 cluster
@@ -44,6 +44,7 @@ cluster
 ├── cluster.pdf
 ├── prob_cluster.txt
 ├── no_errors.txt
+├── p_pop_cluster.txt
 ├── single_fraction_cluster.pdf
 ├── samples_fraction_cluster.txt
 ├── p_single_cluster.pdf
@@ -56,6 +57,7 @@ Content of the output files produced by RAVEN:
 * `cluster.pdf`: radial velocity probability density;
 * `single_fraction_cluster.pdf`: posterior probability density for the fraction of single stars;
 * `samples_fraction_cluster.txt`: posterior samples for the fraction of single stars;
+* `p_pop_cluster.txt`: in case of multiple populations/outliers, a summary of the membership probability for each object included in the analysis; 
 * `p_single_cluster.txt`: objects included in the cluster ranked by their probability of being single stars;
 * `p_single_cluster.pdf`: fancy plot displaying the probability of each object of being a single star;
 * `no_errors.txt`: if some of the measurements do not have an associated uncertainty, this file contains the relative uncertainty that has been associated with the measurements.
@@ -66,7 +68,7 @@ Content of the output files produced by RAVEN:
 Once RAVEN is installed, move to the `M17` directory and run the analysis:
 ```
 cd M17
-raven -i stars -b "[-40,60]" --sana_variability
+raven -i stars -b "[-40,60]" --sana_variability --n_populations 2 --outliers
 ```
 The analysis should finish in around 10 minutes on a normal laptop. The plots included in the paper are `M17.pdf` and `p_single_M17.pdf`.
 
