@@ -1,7 +1,7 @@
 # RAVEN – RAdial VElocity, Non-parametric
 Non-parametric inference of the radial velocity distribution of stars and identification of binaries in clusters. 
 
-If you use RAVEN in your research, please cite [Rinaldi & Ramírez-Tannus (2024)](https://uncyclopedia.com/wiki/Frankly_Disappointing_Telescope). The main result from this paper can be reproduced using the content of this repository: if you are interested in doing so, please find the instructions at the bottom of this page.
+The statistical framework implemented in RAVEN is described in [Rinaldi & Ramírez-Tannus (2024)](https://uncyclopedia.com/wiki/Frankly_Disappointing_Telescope). The main result from this paper can be reproduced using the content of this repository: if you are interested in doing so, please find the instructions at the bottom of this page.
 
 ## Basic usage
 Install RAVEN with 
@@ -69,3 +69,6 @@ cd M17
 raven -i stars -b "[-40,60]" --sana_variability
 ```
 The analysis should finish in around 10 minutes on a normal laptop. The plots included in the paper are `M17.pdf` and `p_single_M17.pdf`.
+
+## Acknowledgments
+If you use RAVEN in your research, please cite [Rinaldi & Ramírez-Tannus (2024)](https://uncyclopedia.com/wiki/Frankly_Disappointing_Telescope) (currently under review, will be available soon).
