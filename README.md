@@ -68,7 +68,7 @@ Content of the output files produced by RAVEN:
 Once RAVEN is installed, move to the `M17` directory and run the analysis:
 ```
 cd M17
-raven -i stars -b "[-40,60]" --sana_variability --n_populations 2 --outliers
+raven -i stars -b "[-20,40]" --sana_variability --n_populations 2 --outliers
 ```
 The analysis should finish in around 10 minutes on a normal laptop. The plots included in the paper are `M17.pdf` and `p_single_M17.pdf`.
 
