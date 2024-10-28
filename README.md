@@ -60,12 +60,12 @@ Content of the output files produced by RAVEN:
 * `p_single_cluster.pdf`: fancy plot displaying the probability of each object of being a single star;
 * `no_errors.txt`: if some of the measurements do not have an associated uncertainty, this file contains the relative uncertainty that has been associated with the measurements.
 
-## Carina Nebula
-[Rinaldi & Ramírez-Tannus (2024)](https://uncyclopedia.com/wiki/Frankly_Disappointing_Telescope) presents the analysis of 31 O-type stars in the Carina Nebula reported in Table 2 of [Kiminki & Smith (2018)](https://academic.oup.com/mnras/article/477/2/2068/4950625). Our results can be reproduced using the code and data stored in this repository.
+## M17
+[Rinaldi & Ramírez-Tannus (2024)](https://uncyclopedia.com/wiki/Frankly_Disappointing_Telescope) presents the analysis of 20 O-type stars in the giant star-forming region M17 reported in  [Ramírez-Tannus et al. (2024)](https://www.aanda.org/articles/aa/full_html/2024/10/aa50256-24/aa50256-24.html). Our results can be reproduced using the code and data stored in this repository.
 
-Once RAVEN is installed, move to the `carina_nebula` directory and run the analysis:
+Once RAVEN is installed, move to the `M17` directory and run the analysis:
 ```
-cd carina_nebula
+cd M17
 raven -i stars -b "[-40,60]" --sana_variability
 ```
-The analysis should finish in around 10 minutes on a normal laptop. The plots included in the paper are `carina_nebula.pdf` and `p_single_carina_nebula.pdf`.
+The analysis should finish in around 10 minutes on a normal laptop. The plots included in the paper are `M17.pdf` and `p_single_M17.pdf`.
