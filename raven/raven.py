@@ -171,8 +171,11 @@ def main():
     if options.n_populations == 1 and not options.outliers:
         np.savetxt(Path(options.output, 'samples_fraction_{}.txt'.format(options.h_name)), single_fraction)
     else:
-        for sf, name in zip(single_fraction[options.outliers:], pop_names):
-            np.savetxt(Path(options.output, 'samples_fraction_{}_{}.txt'.format(options.h_name, name)), sf)
+        if options.n_populations > 1:
+            for sf, name in zip(single_fraction[options.outliers:], pop_names):
+                np.savetxt(Path(options.output, 'samples_fraction_{}_{}.txt'.format(options.h_name, name)), sf)
+        else:
+            np.savetxt(Path(options.output, 'samples_fraction_{}.txt'.format(options.h_name)), single_fraction[options.outliers:])
     # Save probabilities
     ll, mm, uu = np.percentile(prob_single, [16,50,84], axis = 0)
     idx = np.argsort(mm)
