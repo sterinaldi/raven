@@ -1,7 +1,7 @@
 # RAVEN – RAdial VElocity, Non-parametric
 Non-parametric inference of the radial velocity distribution of stars and identification of binaries in clusters. 
 
-The statistical framework implemented in RAVEN is described in [Rinaldi & Ramírez-Tannus (2024)](https://uncyclopedia.com/wiki/Frankly_Disappointing_Telescope). The main result from this paper can be reproduced using the content of this repository: if you are interested in doing so, please find the instructions at the bottom of this page.
+The statistical framework implemented in RAVEN is described in [Rinaldi & Ramírez-Tannus (2024)](https://arxiv.org/pdf/2411.07676). The main result from this paper can be reproduced using the content of this repository: if you are interested in doing so, please find the instructions at the bottom of this page.
 
 ## Basic usage
 Install RAVEN with 
@@ -63,7 +63,7 @@ Content of the output files produced by RAVEN:
 * `no_errors.txt`: if some of the measurements do not have an associated uncertainty, this file contains the relative uncertainty that has been associated with the measurements.
 
 ## M17
-[Rinaldi & Ramírez-Tannus (2024)](https://uncyclopedia.com/wiki/Frankly_Disappointing_Telescope) presents the analysis of 20 O-type stars in the giant star-forming region M17 reported in  [Ramírez-Tannus et al. (2024)](https://www.aanda.org/articles/aa/full_html/2024/10/aa50256-24/aa50256-24.html). Our results can be reproduced using the code and data stored in this repository.
+[Rinaldi & Ramírez-Tannus (2024)](https://arxiv.org/pdf/2411.07676) presents the analysis of 20 O-type stars in the giant star-forming region M17 reported in  [Ramírez-Tannus et al. (2024)](https://www.aanda.org/articles/aa/full_html/2024/10/aa50256-24/aa50256-24.html). Our results can be reproduced using the code and data stored in this repository.
 
 Once RAVEN is installed, move to the `M17` directory and run the analysis:
 ```
@@ -73,4 +73,22 @@ raven -i stars -b "[-20,40]" --sana_variability --n_populations 2 --outliers
 The analysis should finish in around 10 minutes on a normal laptop. The plots included in the paper are `M17.pdf` and `p_single_M17.pdf`.
 
 ## Acknowledgments
-If you use RAVEN in your research, please cite [Rinaldi & Ramírez-Tannus (2024)](https://uncyclopedia.com/wiki/Frankly_Disappointing_Telescope) (currently under review, will be available soon).
+If you use RAVEN in your research, please cite [Rinaldi & Ramírez-Tannus (2024)](https://arxiv.org/pdf/2411.07676):
+
+```text
+@ARTICLE{2024arXiv241107676R,
+       author = {{Rinaldi}, Stefano and {Ram{\'\i}rez-Tannus}, Mar{\'\i}a Claudia},
+        title = "{Non-parametric identification of single-lined binary candidates in young clusters using single-epoch spectroscopy}",
+      journal = {arXiv e-prints},
+     keywords = {Astrophysics - Astrophysics of Galaxies, Astrophysics - Solar and Stellar Astrophysics},
+         year = 2024,
+        month = nov,
+          eid = {arXiv:2411.07676},
+        pages = {arXiv:2411.07676},
+archivePrefix = {arXiv},
+       eprint = {2411.07676},
+ primaryClass = {astro-ph.GA},
+       adsurl = {https://ui.adsabs.harvard.edu/abs/2024arXiv241107676R},
+      adsnote = {Provided by the SAO/NASA Astrophysics Data System}
+}
+```
