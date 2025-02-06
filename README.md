@@ -76,19 +76,21 @@ The analysis should finish in around 10 minutes on a normal laptop. The plots in
 If you use RAVEN in your research, please cite [Rinaldi & Ramírez-Tannus (2024)](https://arxiv.org/pdf/2411.07676):
 
 ```text
-@ARTICLE{2024arXiv241107676R,
+@ARTICLE{2024A&A...692A.173R,
        author = {{Rinaldi}, Stefano and {Ram{\'\i}rez-Tannus}, Mar{\'\i}a Claudia},
         title = "{Non-parametric identification of single-lined binary candidates in young clusters using single-epoch spectroscopy}",
-      journal = {arXiv e-prints},
-     keywords = {Astrophysics - Astrophysics of Galaxies, Astrophysics - Solar and Stellar Astrophysics},
+      journal = {Astronomy and Astrophysics},
+     keywords = {methods: statistical, open clusters and associations: general, Astrophysics - Astrophysics of Galaxies, Astrophysics - Solar and Stellar Astrophysics},
          year = 2024,
-        month = nov,
-          eid = {arXiv:2411.07676},
-        pages = {arXiv:2411.07676},
+        month = dec,
+       volume = {692},
+          eid = {A173},
+        pages = {A173},
+          doi = {10.1051/0004-6361/202451694},
 archivePrefix = {arXiv},
        eprint = {2411.07676},
  primaryClass = {astro-ph.GA},
-       adsurl = {https://ui.adsabs.harvard.edu/abs/2024arXiv241107676R},
+       adsurl = {https://ui.adsabs.harvard.edu/abs/2024A&A...692A.173R},
       adsnote = {Provided by the SAO/NASA Astrophysics Data System}
 }
 ```
