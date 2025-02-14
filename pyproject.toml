@@ -13,7 +13,7 @@ packages = ['raven']
 [project]
 name = 'raven'
 description = 'RAVEN: Radial Velocities, Nonparametric'
-version = '1.0.0'
+version = '1.0.1'
 requires-python = '< 3.12'
 readme = {file = "README.md", content-type = "text/markdown"}
 license = {file = "LICENSE"}
@@ -41,7 +41,7 @@ classifiers = [
 dependencies = [
     "numpy",
     "scipy",
-    "matplotlib != 3.6.3",
+    "matplotlib >= 3.10.0",
     "tqdm",
     "figaro > 1.6.7",
     ]
