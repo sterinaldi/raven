@@ -14,7 +14,7 @@ packages = ['raven']
 name = 'raven'
 description = 'RAVEN: Radial Velocities, Nonparametric'
 version = '1.0.1'
-requires-python = '< 3.12'
+requires-python = '>= 3.9, < 3.13'
 readme = {file = "README.md", content-type = "text/markdown"}
 license = {file = "LICENSE"}
 keywords = ['hierarchical', '(H)DPGMM', 'inference', 'radial velocity', 'clusters']
