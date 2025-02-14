@@ -33,7 +33,7 @@ def plot_median_cr(draws, mu, weight, vel_disp, pop_names = None, *args, **kwarg
         handles.insert(1, pop_entry)
     leg = ax.legend(loc = 0, handles = handles)
     if len(mu) > 1:
-        for item in leg.legendHandles[2:]:
+        for item in leg.legend_handles[2:]:
             item.set_visible(False)
     fig.savefig(Path(kwargs.get('out_folder'), '{}.pdf'.format(kwargs.get('name'))), bbox_inches = 'tight')
     return fig
@@ -50,7 +50,7 @@ def plot_single_fraction(samples, names = None, out_folder = '.', name = 'cluste
     ax.set_xlabel('$w_\\mathrm{single}$')
     ax.set_ylabel('$p(w_\\mathrm{single})$')
     leg = ax.legend(handlelength=0, handletextpad=0)
-    for item in leg.legendHandles:
+    for item in leg.legend_handles:
         item.set_visible(False)
     fig.savefig(Path(out_folder, 'single_fraction_{}.pdf'.format(name)), bbox_inches = 'tight')
     plt.close(fig)
